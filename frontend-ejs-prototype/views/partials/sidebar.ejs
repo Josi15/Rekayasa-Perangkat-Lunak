@@ -1,0 +1,15 @@
+<aside class="sidebar">
+  <a class="brand" href="/admin/dashboard"><i class="bi bi-mortarboard-fill"></i><span>simba</span></a>
+  <p class="nav-title">Menu navigasi</p>
+  <nav class="nav">
+    <% menu.forEach(m => { %>
+      <a href="<%= m.href %>" class="nav-item <%= m.key === active ? 'is-active' : '' %>">
+        <i class="bi <%= m.icon %>"></i><span><%= m.label %></span>
+      </a>
+    <% }) %>
+  </nav>
+  <div class="sidebar-foot">
+    <a href="#" class="foot-btn"><i class="bi bi-headset"></i> Bantuan / CS Sekolah</a>
+    <a href="/logout" class="foot-btn is-danger"><i class="bi bi-box-arrow-right"></i> Keluar Aplikasi</a>
+  </div>
+</aside>

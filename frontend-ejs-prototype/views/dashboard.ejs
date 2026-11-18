@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>SIMBA Admin – Kontrol Administrator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="/css/shell.css">
+  <link rel="stylesheet" href="/css/dashboard.css">
+</head>
+<body>
+<div class="app">
+  <%- include('partials/shell-sidebar') %>
+  <div class="col">
+    <%- include('partials/shell-topbar') %>
+    <main>
+  
+
+  <div class="crumb">SIMBA Admin › <b>Master Control</b></div>
+  <div class="head"><h1>Kontrol Administrator</h1><button class="btn" data-t="Buat Pengumuman Sekolah">📢 + Buat Pengumuman Sekolah</button></div>
+
+  <section class="stats">
+    <div class="card st"><div class="r"><span class="ic">🪪</span><span class="pill">100% SSO</span></div><div class="lb">Total Pengguna Aktif</div><div class="big">876 <span>Akun</span></div><div class="sub"><span><b>810</b>Siswa</span><span><b>54</b>Guru</span><span><b>12</b>Tendik</span></div></div>
+    <div class="card st"><div class="r"><span class="ic">🚪</span><span class="pill">Optimal</span></div><div class="lb">Rombongan Belajar</div><div class="big">24 <span>Kelas</span></div><div class="sub"><span><i class="dot"></i>Tingkat X, XI, XII terisi seimbang</span></div></div>
+    <div class="card st"><div class="r"><span class="ic">✅</span><span class="pill">0 Geofence Alert</span></div><div class="lb">KBM &amp; Presensi Hari Ini</div><div class="big gr">97.8% <span>Hadir</span></div><div class="bar"><i style="width:97.8%"></i></div></div>
+  </section>
+
+  <section class="grid2">
+    <div class="card">
+      <div class="row"><h2><i class="dot"></i>Aktivitas KBM &amp; Sesi Berjalan Realtime</h2><span class="live">🕒 Terakhir update: Detik ini</span></div>
+      <div class="tw"><table>
+<colgroup><col style="width:24%"><col style="width:27%"><col style="width:17%"><col style="width:18%"><col style="width:14%"></colgroup>
+        <thead><tr><th>Kelas &amp; Mapel</th><th>Guru Pengampu</th><th>Ruang</th><th>Presensi</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td><div class="kls"><span class="kb">XII</span><div><b>XII MIPA 1</b><small>Biologi Molekuler</small></div></div></td><td><b>Ibu Siti Rahmawati, M.Pd.</b><div class="nip">NIP. 198204122005012004</div></td><td><span class="rg">Lab Biologi 2</span></td><td class="pr"><b>34 / 36</b><small>(2 Izin)</small><div class="bar"><i style="width:94%"></i></div></td><td class="lv">Live<br>Monitor</td></tr>
+          <tr><td><div class="kls"><span class="kb">XI</span><div><b>XI IPS 2</b><small>Sosiologi Perubahan</small></div></div></td><td><b>Pak Hendra Wijaya, S.Sos.</b><div class="nip">NIP. 197809152003121002</div></td><td><span class="rg">Ruang Teori 204</span></td><td class="pr"><b>35 / 36</b><small>(1 Sakit)</small><div class="bar"><i style="width:97%"></i></div></td><td class="lv">Live<br>Monitor</td></tr>
+          <tr><td><div class="kls"><span class="kb">X</span><div><b>X-4</b><small>Matematika Diskrit</small></div></div></td><td><b>Dra. Ratna Purwanti</b><div class="nip">NIP. 197405101999032001</div></td><td><span class="rg">Ruang Teori 102</span></td><td class="pr"><b>36 / 36</b><small>(Lengkap)</small><div class="bar"><i style="width:100%"></i></div></td><td class="lv">Live<br>Monitor</td></tr>
+        </tbody></table></div>
+    </div>
+    <div class="card">
+      <div class="row"><h2>Tindakan Cepat (Admin Tools)</h2></div>
+      <div class="tools">
+        <button class="tool" data-t="Tambah Akun Massal"><span class="ic">📄</span><span><b>Tambah Akun Massal</b><small>Import template format CSV / Excel</small></span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg></button>
+        <button class="tool" data-t="Generate Token CBT"><span class="ic n">🔑</span><span><b>Generate Token CBT Pengawas</b><small>Perbarui token acak berkala 15 menit</small></span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg></button>
+        <button class="tool" data-t="Backup Database Harian"><span class="ic n">☁️</span><span><b>Backup Database Harian</b><small>Dump berkas arsip .SQL terenkripsi</small></span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg></button>
+      </div>
+    </div>
+  </section>
+
+  <section class="card" style="margin-bottom:22px">
+    <div class="row"><div><h2>Manajemen Pengguna Cepat</h2><small style="color:var(--mute)">Antrean verifikasi akun baru &amp; pembaruan peran Dapodik</small></div>
+      <div class="tabs" id="tabs"><button class="on" data-f="all">Semua (<span id="cnt">3</span>)</button><button data-f="Guru">Guru</button><button data-f="Siswa">Siswa</button><button data-f="Tendik">Tendik</button></div></div>
+    <div class="ul" id="ul"></div>
+  </section>
+
+  <section class="card">
+    <div class="row"><h2>📡 Pemberitahuan Sistem &amp; Siaran Sekolah</h2><span class="pill" style="border-radius:6px;padding:5px 12px">Siaran Aktif</span></div>
+    <article class="ann">
+      <div class="m"><b>PENGUMUMAN AKADEMIK #2025/GENAP-04</b><span>Dipublikasi: Kemarin, 14:00 WIB</span></div>
+      <h3>Jadwal Ujian Tengah Semester &amp; Petunjuk CBT Berbasis Browser Aman</h3>
+      <p>Diberitahukan kepada seluruh peserta didik kelas X, XI, dan XII bahwa simulasi CBT akan dilaksanakan serentak mulai hari Kamis melalui portal SIMBA. Pastikan aplikasi Safe Exam Browser versi 3.2 telah terpasang pada perangkat masing-masing.</p>
+      <div class="ft">👁 <b>842</b> / 876 membaca (96%) <span class="bar"><i style="width:96%"></i></span><a class="p" href="#edit" data-t="Edit pengumuman" style="color:var(--ink)">Edit</a><a href="#pembaca" data-t="Pembaca detail">Lihat Pembaca Detail</a></div>
+    </article>
+  </section>
+</main>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<script src="/js/dashboard.js"></script>
+</body>
+</html>

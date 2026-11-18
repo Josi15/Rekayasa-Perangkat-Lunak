@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>SIMBA Admin – Mata Pelajaran &amp; Kurikulum</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="/css/shell.css">
+  <link rel="stylesheet" href="/css/mapel.css">
+</head>
+<body>
+<div class="app">
+  <%- include('partials/shell-sidebar') %>
+  <div class="col">
+    <%- include('partials/shell-topbar') %>
+    <main>
+  
+
+  <div class="crumb">SIMBA Admin › <b>Kurikulum &amp; Akademik</b></div>
+  <div class="head"><h1>Manajemen Mata Pelajaran &amp; Kurikulum</h1><button class="btn" data-t="Tambah Mata Pelajaran">⊕ Tambah Mata Pelajaran</button></div>
+
+  <section class="stats">
+    <div class="sc"><span class="ic">📖</span><div class="lb">Total Mata Pelajaran</div><div class="big">32 <span>Mapel Aktif</span></div><div class="sub"><span><i></i>18 Wajib</span><span><i></i>10 Fase F Peminatan</span><span><i></i>4 Mulok</span></div></div>
+    <div class="sc"><span class="ic">🕒</span><div class="lb">Total Beban Jam (JP)</div><div class="big">384 <span>JP / Pekan</span></div><div class="sub"><span>▥ Rata-rata 32 JP per rombel</span></div></div>
+  </section>
+
+  <section class="card">
+    <div class="fl">
+      <div class="tabs" id="tabs"><button class="on" data-f="">Semua (32)</button><button data-f="E">Fase E - Kelas X (16)</button><button data-f="M">Fase F - MIPA (6)</button><button data-f="I">Fase F - IPS &amp; Umum (10)</button></div>
+      <label class="fs"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg><input id="q" placeholder="Cari nama atau kode mapel..."></label>
+      <select id="ss"><option value="">Semua Status Modul</option><option value="v">Modul Ajar Valid</option><option value="r">Perlu Review Silabus</option></select>
+    </div>
+    <div class="tw"><table>
+<colgroup><col style="width:11%"><col style="width:24%"><col style="width:16%"><col style="width:9%"><col style="width:19%"><col style="width:14%"><col style="width:7%"></colgroup><thead><tr><th class="c">Kode</th><th>Mata Pelajaran &amp; Jenjang</th><th class="c">Kelompok / Fase</th><th class="c">Alokasi<br>JP</th><th>Koordinator &amp; Tim</th><th class="c">Status Modul<br>Ajar</th><th class="c">Aksi</th></tr></thead><tbody id="tb"></tbody></table></div>
+    <div class="pg"><span id="info"></span><div class="pn" id="pn"></div></div>
+  </section>
+</main>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<script src="/js/mapel.js"></script>
+</body>
+</html>

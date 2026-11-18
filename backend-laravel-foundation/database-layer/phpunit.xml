@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+         bootstrap="vendor/autoload.php"
+         colors="true"
+>
+    <testsuites>
+        <testsuite name="Unit">
+            <directory>tests/Unit</directory>
+        </testsuite>
+        <testsuite name="Feature">
+            <directory>tests/Feature</directory>
+        </testsuite>
+    </testsuites>
+    <source>
+        <include>
+            <directory>app</directory>
+        </include>
+    </source>
+    <php>
+        <env name="APP_ENV" value="testing"/>
+        <env name="APP_MAINTENANCE_DRIVER" value="file"/>
+        <env name="BCRYPT_ROUNDS" value="4"/>
+        <env name="CACHE_STORE" value="array"/>
+        <!--
+          Test memakai PostgreSQL pada database TERPISAH (migrate:fresh dijalankan
+          di sini). Host/user/password diambil dari .env atau .env.testing, tidak
+          ditulis di file ini. DatabaseTestCase menolak berjalan bila nama
+          database tidak berakhiran "_test".
+        -->
+        <env name="DB_CONNECTION" value="pgsql"/>
+        <env name="DB_DATABASE" value="lms_simba_test"/>
+        <env name="AUTH_MODEL" value="App\Models\Pengguna"/>
+        <env name="MAIL_MAILER" value="array"/>
+        <env name="QUEUE_CONNECTION" value="sync"/>
+        <env name="SESSION_DRIVER" value="array"/>
+        <env name="SESSION_SAME_SITE" value="lax"/>
+        <!-- Autentikasi SPA (Backend 3) -->
+        <env name="SANCTUM_STATEFUL_DOMAINS" value="localhost:5173"/>
+        <env name="FRONTEND_URL" value="http://localhost:5173"/>
+        <env name="CORS_ALLOWED_ORIGINS" value="http://localhost:5173"/>
+        <env name="CORS_SUPPORTS_CREDENTIALS" value="true"/>
+        <env name="LOGIN_MAX_ATTEMPTS" value="5"/>
+        <env name="PASSWORD_RESET_EXPIRE_MINUTES" value="60"/>
+    </php>
+</phpunit>

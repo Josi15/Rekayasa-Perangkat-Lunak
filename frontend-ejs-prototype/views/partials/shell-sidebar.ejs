@@ -1,0 +1,19 @@
+<% /* Menu admin (6 halaman). `active` dikirim dari server.js */
+  const menuAdmin = [
+    { key: 'dashboard', href: '/admin/dashboard', label: 'Dashboard Admin', icon: '<rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/>' },
+    { key: 'pengguna', href: '/admin/pengguna', label: 'Manajemen Pengguna', icon: '<circle cx="9" cy="8" r="4"/><path d="M2 21c0-4 3-6 7-6s7 2 7 6M17 4a4 4 0 010 8M22 21c0-3-2-5-4-5.5"/>' },
+    { key: 'kelas', href: '/admin/rombel', label: 'Kelas & Rombel', icon: '<path d="M5 21V4a1 1 0 011-1h9a1 1 0 011 1v17M3 21h18M10 12h.01"/>' },
+    { key: 'mapel', href: '/admin/mapel', label: 'Mata Pelajaran & Kurikulum', icon: '<path d="M2 5c3-1 6-1 10 1 4-2 7-2 10-1v14c-3-1-6-1-10 1-4-2-7-2-10-1zM12 6v14"/>' },
+    { key: 'jadwal', href: '/admin/jadwal', label: 'Jadwal & Kalender KBM', icon: '<rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/>' },
+    { key: 'sistem', href: '/admin/sistem', label: 'Pengaturan Sistem & Backup', icon: '<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/>' }
+  ]; %>
+<aside>
+  <a class="logo" href="/admin/dashboard"><img src="/img/logo.png" alt="SIMBA" onerror="this.style.display='none'"><span>simba</span></a>
+  <div class="dap">&#10004; Dapodik Terverifikasi<b></b></div>
+  <nav aria-label="Menu utama">
+    <% menuAdmin.forEach(m => { %>
+      <a href="<%= m.href %>" class="<%= m.key === active ? 'on' : '' %>"<%- m.key === active ? ' aria-current="page"' : '' %>><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><%- m.icon %></svg><%= m.label %></a>
+    <% }) %>
+  </nav>
+  <div class="usr"><span class="av"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg></span><div><b>Drs. Bambang S.</b><small>Kepala TU</small></div></div>
+</aside>

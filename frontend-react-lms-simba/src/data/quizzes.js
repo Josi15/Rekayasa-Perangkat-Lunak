@@ -1,0 +1,9 @@
+// Data simulasi kuis. Tautan Google Form di bawah hanyalah contoh, bukan form sungguhan.
+export const quizSeeds = [
+  { id: 1, title: 'Kuis Form Bab 3 Fungsi Eksponen', source: 'google', status: 'running', classIds: [1], questionCount: 30, type: 'PG', durationMin: 45, dueAt: '2026-10-25T15:00', formUrl: 'https://docs.google.com/forms/d/e/1FAIpQLSc_contoh_8kZ3y9/viewform', done: 30, total: 32, avg: 89.4, syncedAt: null },
+  { id: 2, title: 'Pre-Test Aturan Pangkat & Logaritma', source: 'engine', status: 'finished', classIds: [1, 2], questionCount: 20, type: 'PG', durationMin: 30, dueAt: '2026-10-12T15:00', formUrl: '', done: 62, total: 62, avg: 85.0, syncedAt: null },
+  { id: 3, title: 'Kuis Harian Trigonometri Dasar', source: 'google', status: 'scheduled', classIds: [1], questionCount: 25, type: 'PG', durationMin: 40, dueAt: '2026-11-02T10:00', formUrl: 'https://docs.google.com/forms/d/e/1FAIpQLSc_contoh_trigo/viewform', done: 0, total: 32, avg: null, syncedAt: null },
+  { id: 4, title: 'Latihan Soal Olimpiade Matematika', source: 'mandiri', status: 'finished', classIds: [], audience: 'Khusus Ekskul', questionCount: 40, type: 'PG & Esai', durationMin: 90, dueAt: '2026-10-05T12:00', formUrl: '', done: 15, total: 15, avg: 92.5, syncedAt: null },
+  { id: 5, title: 'Kuis Statistika Dasar', source: 'engine', status: 'running', classIds: [2], questionCount: 20, type: 'PG', durationMin: 30, dueAt: '2026-10-28T12:00', formUrl: '', done: 21, total: 30, avg: 82.3, syncedAt: null },
+  { id: 6, title: 'Remedial Fungsi Kuadrat', source: 'google', status: 'scheduled', classIds: [1], questionCount: 15, type: 'PG', durationMin: 25, dueAt: '2026-11-09T09:00', formUrl: 'https://docs.google.com/forms/d/e/1FAIpQLSc_contoh_remed/viewform', done: 0, total: 32, avg: null, syncedAt: null },
+]

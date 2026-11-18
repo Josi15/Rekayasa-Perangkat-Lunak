@@ -1,0 +1,6351 @@
+openapi: 3.0.3
+info:
+  title: LMS Simba API
+  version: 1.0.0
+  description: 'Dibangkitkan otomatis dari kode (route, FormRequest, Resource, service) oleh verify/gen_openapi.py. Autentikasi: cookie sesi Sanctum
+    SPA + header X-XSRF-TOKEN (CSRF). Format error: {message, code, errors?, request_id}. Daftar field Resource adalah nama field; tipe tiap field
+    mengikuti docs/API-*.md. Dokumen ini BELUM diuji terhadap server yang berjalan.'
+servers:
+- url: http://lms-simba.test
+  description: Lokal (Laravel Herd)
+- url: https://api.contoh.sekolah.id
+  description: Produksi (contoh)
+tags:
+- name: Health
+- name: Profil
+- name: Kelas & keanggotaan
+- name: Mata pelajaran
+- name: Materi
+- name: Tugas
+- name: Pengumpulan tugas
+- name: Kuis
+- name: Nilai
+- name: Jadwal
+- name: Presensi
+- name: Pengumuman
+- name: Dashboard
+- name: Pengguna (admin)
+- name: Autentikasi
+paths:
+  /api/v1/admin/pengguna:
+    get:
+      tags:
+      - Pengguna (admin)
+      summary: Daftar pengguna (admin)
+      operationId: pengguna_index
+      responses:
+        '200':
+          description: Berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PenggunaResource'
+                  links:
+                    type: object
+                  meta:
+                    $ref: '#/components/schemas/PaginationMeta'
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 'Tidak berwenang (code: forbidden)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: 'Validasi gagal (code: validation_error, errors per field)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: GET /admin/pengguna?cari=&peran=&status=&urut=&arah=&page=&per_page=
+      x-akses:
+        peran:
+        - admin
+        policy:
+        - viewAny
+      parameters:
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: cari
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: urut
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: arah
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - asc
+          - desc
+      - name: peran
+        in: query
+        required: false
+        schema:
+          type: string
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+    post:
+      tags:
+      - Pengguna (admin)
+      summary: Buat pengguna (admin)
+      operationId: pengguna_store
+      responses:
+        '201':
+          description: Berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/PenggunaResource'
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 'Tidak berwenang (code: forbidden)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: 'Validasi gagal (code: validation_error, errors per field)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: POST /admin/pengguna
+      x-akses:
+        peran:
+        - admin
+        policy:
+        - create
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                peran:
+                  type: string
+                nisn:
+                  type: string
+                nip:
+                  type: string
+                username:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+              required:
+              - peran
+              - password
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+  /api/v1/admin/pengguna/{pengguna}:
+    get:
+      tags:
+      - Pengguna (admin)
+      summary: Detail pengguna (admin)
+      operationId: pengguna_show
+      responses:
+        '200':
+          description: Berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/PenggunaResource'
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 'Tidak berwenang (code: forbidden)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: 'Tidak ditemukan (code: not_found)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: GET /admin/pengguna/{pengguna}
+      x-akses:
+        peran:
+        - admin
+        policy:
+        - view
+      parameters:
+      - name: pengguna
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+    patch:
+      tags:
+      - Pengguna (admin)
+      summary: Ubah pengguna (admin)
+      operationId: pengguna_update
+      responses:
+        '200':
+          description: Berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/PenggunaResource'
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 'Tidak berwenang (code: forbidden)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: 'Tidak ditemukan (code: not_found)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: 'Validasi gagal (code: validation_error, errors per field)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: PATCH /admin/pengguna/{pengguna}
+      x-akses:
+        peran:
+        - admin
+        policy:
+        - update
+      parameters:
+      - name: pengguna
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nisn:
+                  type: string
+                nip:
+                  type: string
+                username:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+  /api/v1/admin/pengguna/{pengguna}/aktifkan:
+    post:
+      tags:
+      - Pengguna (admin)
+      summary: Aktifkan kembali akun pengguna
+      operationId: pengguna_aktifkan
+      responses:
+        '200':
+          description: Berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/PenggunaResource'
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 'Tidak berwenang (code: forbidden)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: 'Tidak ditemukan (code: not_found)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: 'Validasi gagal (code: validation_error, errors per field)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: POST /admin/pengguna/{pengguna}/aktifkan
+      x-akses:
+        peran:
+        - admin
+        policy:
+        - aktifkan
+      parameters:
+      - name: pengguna
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+  /api/v1/admin/pengguna/{pengguna}/nonaktifkan:
+    post:
+      tags:
+      - Pengguna (admin)
+      summary: 409 bila guru masih punya tanggungan aktif.
+      operationId: pengguna_nonaktifkan
+      responses:
+        '200':
+          description: Berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/PenggunaResource'
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 'Tidak berwenang (code: forbidden)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: 'Tidak ditemukan (code: not_found)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: 'Konflik aturan bisnis. Kode kemungkinan: teacher_has_active_subjects, teacher_has_upcoming_schedule, teacher_is_active_homeroom'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: 'Validasi gagal (code: validation_error, errors per field)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: POST /admin/pengguna/{pengguna}/nonaktifkan — 409 bila guru masih punya tanggungan aktif.
+      x-akses:
+        peran:
+        - admin
+        policy:
+        - nonaktifkan
+      parameters:
+      - name: pengguna
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+  /api/v1/auth/forgot-password:
+    post:
+      tags:
+      - Autentikasi
+      summary: Minta tautan reset password (respons selalu generik)
+      operationId: password_forgot
+      responses:
+        '200':
+          description: Berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        '422':
+          description: 'Validasi gagal (code: validation_error, errors per field)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: POST /api/v1/auth/forgot-password
+      security: []
+  /api/v1/auth/login:
+    post:
+      tags:
+      - Autentikasi
+      summary: Login (NISN/NIP/username/email + password), memulai sesi
+      operationId: login
+      responses:
+        '200':
+          description: Berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/PenggunaResource'
+        '422':
+          description: 'Validasi gagal (code: validation_error, errors per field)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: POST /api/v1/auth/login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                login:
+                  type: string
+                password:
+                  type: string
+              required:
+              - login
+              - password
+      security: []
+  /api/v1/auth/logout:
+    post:
+      tags:
+      - Autentikasi
+      summary: Logout, mengakhiri sesi
+      operationId: logout
+      responses:
+        '204':
+          description: Berhasil
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: 'Validasi gagal (code: validation_error, errors per field)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: POST /api/v1/auth/logout
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+  /api/v1/auth/me:
+    get:
+      tags:
+      - Autentikasi
+      summary: Data pengguna yang sedang login
+      operationId: me
+      responses:
+        '200':
+          description: Berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/PenggunaResource'
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: GET /api/v1/auth/me
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+  /api/v1/auth/reset-password:
+    post:
+      tags:
+      - Autentikasi
+      summary: Atur password baru dengan token reset
+      operationId: password_reset
+      responses:
+        '200':
+          description: Berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        '422':
+          description: 'Validasi gagal (code: validation_error, errors per field)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: POST /api/v1/auth/reset-password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                token:
+                  type: string
+                password:
+                  type: string
+              required:
+              - email
+              - token
+              - password
+      security: []
+  /api/v1/auth/reset-password/validate:
+    post:
+      tags:
+      - Autentikasi
+      summary: Periksa token reset masih berlaku
+      operationId: password_validate
+      responses:
+        '200':
+          description: Berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        '422':
+          description: 'Validasi gagal (code: validation_error, errors per field)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: POST /api/v1/auth/reset-password/validate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                token:
+                  type: string
+              required:
+              - email
+              - token
+      security: []
+  /api/v1/dashboard:
+    get:
+      tags:
+      - Dashboard
+      summary: statistik sesuai peran pemanggil (peran dibaca dari database, bukan dari input klien).
+      operationId: dashboard_show
+      responses:
+        '200':
+          description: Berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: 'Validasi gagal (code: validation_error, errors per field)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: GET /dashboard — statistik sesuai peran pemanggil (peran dibaca dari database, bukan dari input klien).
+      parameters:
+      - name: dari
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date
+      - name: sampai
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+  /api/v1/guru/{guru}/jadwal:
+    get:
+      tags:
+      - Jadwal
+      summary: Jadwal mengajar seorang guru (admin atau guru itu)
+      operationId: jadwal_guru
+      responses:
+        '200':
+          description: Berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 'Tidak berwenang (code: forbidden)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: 'Tidak ditemukan (code: not_found)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: GET /guru/{guru}/jadwal
+      x-akses:
+        policy:
+        - viewJadwal
+      parameters:
+      - name: guru
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+  /api/v1/health:
+    get:
+      tags:
+      - Health
+      summary: 'liveness: aplikasi hidup (tanpa menyentuh database).'
+      operationId: health_live
+      responses:
+        '200':
+          description: Berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: 'GET /api/v1/health — liveness: aplikasi hidup (tanpa menyentuh database).'
+      security: []
+  /api/v1/health/ready:
+    get:
+      tags:
+      - Health
+      summary: 'readiness: aplikasi siap melayani (database terjangkau).'
+      operationId: health_ready
+      responses:
+        '200':
+          description: Berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: 'GET /api/v1/health/ready — readiness: aplikasi siap melayani (database terjangkau).'
+      security: []
+  /api/v1/jadwal:
+    get:
+      tags:
+      - Jadwal
+      summary: 'jadwal yang boleh dilihat pemanggil (siswa: kelasnya; guru: yang diajar/diampu; admin: semua).'
+      operationId: jadwal_index
+      responses:
+        '200':
+          description: Berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 'Tidak berwenang (code: forbidden)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: 'Validasi gagal (code: validation_error, errors per field)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: 'GET /jadwal — jadwal yang boleh dilihat pemanggil (siswa: kelasnya; guru: yang diajar/diampu; admin: semua).'
+      x-akses:
+        policy:
+        - viewAny
+      parameters:
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: cari
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: urut
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: arah
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - asc
+          - desc
+      - name: tanggal
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date
+      - name: dari
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date
+      - name: sampai
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date
+      - name: id_kelas
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: id_guru
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: id_mapel
+        in: query
+        required: false
+        schema:
+          type: integer
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+    post:
+      tags:
+      - Jadwal
+      summary: Buat jadwal (admin); cek bentrok kelas/guru
+      operationId: jadwal_store
+      responses:
+        '201':
+          description: Berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 'Tidak berwenang (code: forbidden)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: 'Konflik aturan bisnis. Kode kemungkinan: class_schedule_conflict, schedule_conflict, teacher_inactive, teacher_schedule_conflict'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: 'Validasi gagal (code: validation_error, errors per field)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: POST /jadwal
+      x-akses:
+        policy:
+        - create
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id_mapel:
+                  type: integer
+                id_kelas:
+                  type: integer
+                id_guru:
+                  type: integer
+                waktu_mulai:
+                  type: string
+                  format: date-time
+                waktu_selesai:
+                  type: string
+                  format: date-time
+              required:
+              - id_mapel
+              - id_kelas
+              - waktu_mulai
+              - waktu_selesai
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+  /api/v1/jadwal/{jadwal}:
+    get:
+      tags:
+      - Jadwal
+      summary: Detail jadwal
+      operationId: jadwal_show
+      responses:
+        '200':
+          description: Berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 'Tidak berwenang (code: forbidden)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: 'Tidak ditemukan (code: not_found)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: GET /jadwal/{jadwal}
+      x-akses:
+        policy:
+        - view
+      parameters:
+      - name: jadwal
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+    patch:
+      tags:
+      - Jadwal
+      summary: Ubah jadwal mendatang tanpa presensi (admin)
+      operationId: jadwal_update
+      responses:
+        '200':
+          description: Berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 'Tidak berwenang (code: forbidden)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: 'Tidak ditemukan (code: not_found)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: 'Konflik aturan bisnis. Kode kemungkinan: class_schedule_conflict, schedule_conflict, schedule_has_attendance, schedule_started,
+            teacher_inactive, teacher_schedule_conflict'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: 'Validasi gagal (code: validation_error, errors per field)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: PATCH /jadwal/{jadwal}
+      x-akses:
+        policy:
+        - update
+      parameters:
+      - name: jadwal
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id_mapel:
+                  type: integer
+                id_kelas:
+                  type: integer
+                id_guru:
+                  type: integer
+                waktu_mulai:
+                  type: string
+                  format: date-time
+                waktu_selesai:
+                  type: string
+                  format: date-time
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+    delete:
+      tags:
+      - Jadwal
+      summary: hanya jadwal mendatang tanpa presensi.
+      operationId: jadwal_destroy
+      responses:
+        '204':
+          description: Berhasil
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 'Tidak berwenang (code: forbidden)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: 'Tidak ditemukan (code: not_found)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: 'Konflik aturan bisnis. Kode kemungkinan: schedule_has_attendance, schedule_started'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: DELETE /jadwal/{jadwal} — hanya jadwal mendatang tanpa presensi.
+      x-akses:
+        policy:
+        - delete
+      parameters:
+      - name: jadwal
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+  /api/v1/jadwal/{jadwal}/checkin:
+    post:
+      tags:
+      - Presensi
+      summary: siswa; hanya koordinat (opsional) yang dikirim.
+      operationId: presensi_checkin
+      responses:
+        '201':
+          description: Berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/PresensiResource'
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 'Tidak berwenang (code: forbidden)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: 'Tidak ditemukan (code: not_found)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: 'Konflik aturan bisnis. Kode kemungkinan: attendance_exists, checkin_not_open, outside_radius'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: 'Validasi gagal (code: validation_error, errors per field)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: POST /jadwal/{jadwal}/checkin — siswa; hanya koordinat (opsional) yang dikirim.
+      x-akses:
+        peran:
+        - siswa
+        policy:
+        - create
+      parameters:
+      - name: jadwal
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                lokasi_lat:
+                  type: number
+                lokasi_lng:
+                  type: number
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+  /api/v1/jadwal/{jadwal}/presensi:
+    get:
+      tags:
+      - Presensi
+      summary: roster kelas + presensi sesi ini (termasuk yang belum tercatat).
+      operationId: presensi_roster
+      responses:
+        '200':
+          description: Berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/RosterPresensiResource'
+                  links:
+                    type: object
+                  meta:
+                    $ref: '#/components/schemas/PaginationMeta'
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 'Tidak berwenang (code: forbidden)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: 'Tidak ditemukan (code: not_found)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: 'Validasi gagal (code: validation_error, errors per field)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: GET /jadwal/{jadwal}/presensi — roster kelas + presensi sesi ini (termasuk yang belum tercatat).
+      x-akses:
+        policy:
+        - lihatPresensi
+      parameters:
+      - name: jadwal
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: cari
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: urut
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: arah
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - asc
+          - desc
+      - name: status_kehadiran
+        in: query
+        required: false
+        schema:
+          type: string
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+    post:
+      tags:
+      - Presensi
+      summary: pencatatan manual (izin/sakit/alpa/dll.) oleh guru pada jadwal / admin.
+      operationId: presensi_catat
+      responses:
+        '201':
+          description: Berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/PresensiResource'
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 'Tidak berwenang (code: forbidden)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: 'Tidak ditemukan (code: not_found)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: 'Konflik aturan bisnis. Kode kemungkinan: attendance_exists'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: 'Validasi gagal (code: validation_error, errors per field)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: POST /jadwal/{jadwal}/presensi — pencatatan manual (izin/sakit/alpa/dll.) oleh guru pada jadwal / admin.
+      x-akses:
+        policy:
+        - catatPresensi
+      parameters:
+      - name: jadwal
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id_siswa:
+                  type: integer
+                status_kehadiran:
+                  type: string
+              required:
+              - id_siswa
+              - status_kehadiran
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+  /api/v1/kelas:
+    get:
+      tags:
+      - Kelas & keanggotaan
+      summary: 'hanya kelas yang boleh dilihat peran pemanggil: siswa = kelas yang diikuti, guru = wali/pengajar, admin = semua.'
+      operationId: kelas_index
+      responses:
+        '200':
+          description: Berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/KelasResource'
+                  links:
+                    type: object
+                  meta:
+                    $ref: '#/components/schemas/PaginationMeta'
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 'Tidak berwenang (code: forbidden)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: 'Validasi gagal (code: validation_error, errors per field)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: 'GET /kelas — hanya kelas yang boleh dilihat peran pemanggil: siswa = kelas yang diikuti, guru = wali/pengajar, admin = semua.'
+      x-akses:
+        policy:
+        - viewAny
+      parameters:
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: cari
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: urut
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: arah
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - asc
+          - desc
+      - name: id_wali
+        in: query
+        required: false
+        schema:
+          type: integer
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+    post:
+      tags:
+      - Kelas & keanggotaan
+      summary: (admin)
+      operationId: kelas_store
+      responses:
+        '201':
+          description: Berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 'Tidak berwenang (code: forbidden)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: 'Validasi gagal (code: validation_error, errors per field)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: POST /kelas (admin)
+      x-akses:
+        policy:
+        - create
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nama_kelas:
+                  type: string
+                id_wali:
+                  type: integer
+              required:
+              - nama_kelas
+              - id_wali
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+  /api/v1/kelas/{kelas}:
+    get:
+      tags:
+      - Kelas & keanggotaan
+      summary: Detail kelas
+      operationId: kelas_show
+      responses:
+        '200':
+          description: Berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 'Tidak berwenang (code: forbidden)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: 'Tidak ditemukan (code: not_found)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: GET /kelas/{kelas}
+      x-akses:
+        policy:
+        - view
+      parameters:
+      - name: kelas
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+    patch:
+      tags:
+      - Kelas & keanggotaan
+      summary: (admin) — nama saja.
+      operationId: kelas_update
+      responses:
+        '200':
+          description: Berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 'Tidak berwenang (code: forbidden)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: 'Tidak ditemukan (code: not_found)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: 'Validasi gagal (code: validation_error, errors per field)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: PATCH /kelas/{kelas} (admin) — nama saja.
+      x-akses:
+        policy:
+        - update
+      parameters:
+      - name: kelas
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nama_kelas:
+                  type: string
+              required:
+              - nama_kelas
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+  /api/v1/kelas/{kelas}/anggota:
+    get:
+      tags:
+      - Kelas & keanggotaan
+      summary: Daftar siswa anggota kelas
+      operationId: kelas_anggota_index
+      responses:
+        '200':
+          description: Berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PenggunaRingkasResource'
+                  links:
+                    type: object
+                  meta:
+                    $ref: '#/components/schemas/PaginationMeta'
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 'Tidak berwenang (code: forbidden)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: 'Tidak ditemukan (code: not_found)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: GET /kelas/{kelas}/anggota
+      x-akses:
+        policy:
+        - viewAnggota
+      parameters:
+      - name: kelas
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+    post:
+      tags:
+      - Kelas & keanggotaan
+      summary: '{id_siswa:[..]} — atomik; 409 already_member bila ada yang sudah anggota.'
+      operationId: kelas_anggota_store
+      responses:
+        '201':
+          description: Berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PenggunaRingkasResource'
+                  links:
+                    type: object
+                  meta:
+                    $ref: '#/components/schemas/PaginationMeta'
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 'Tidak berwenang (code: forbidden)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: 'Tidak ditemukan (code: not_found)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: 'Konflik aturan bisnis. Kode kemungkinan: already_member'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: 'Validasi gagal (code: validation_error, errors per field)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: POST /kelas/{kelas}/anggota {id_siswa:[..]} — atomik; 409 already_member bila ada yang sudah anggota.
+      x-akses:
+        policy:
+        - kelolaAnggota
+      parameters:
+      - name: kelas
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id_siswa:
+                  type: array
+                  items:
+                    type: integer
+              required:
+              - id_siswa
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+  /api/v1/kelas/{kelas}/anggota/{siswa}:
+    delete:
+      tags:
+      - Kelas & keanggotaan
+      summary: Keluarkan siswa dari kelas
+      operationId: kelas_anggota_destroy
+      responses:
+        '204':
+          description: Berhasil
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 'Tidak berwenang (code: forbidden)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: 'Tidak ditemukan (code: not_found)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: DELETE /kelas/{kelas}/anggota/{siswa}
+      x-akses:
+        policy:
+        - kelolaAnggota
+      parameters:
+      - name: kelas
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+      - name: siswa
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+  /api/v1/kelas/{kelas}/arsipkan:
+    post:
+      tags:
+      - Kelas & keanggotaan
+      summary: (admin) — 409 bila masih ada jadwal mendatang.
+      operationId: kelas_arsipkan
+      responses:
+        '200':
+          description: Berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 'Tidak berwenang (code: forbidden)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: 'Tidak ditemukan (code: not_found)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: 'Validasi gagal (code: validation_error, errors per field)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: POST /kelas/{kelas}/arsipkan (admin) — 409 bila masih ada jadwal mendatang.
+      x-akses:
+        policy:
+        - arsipkan
+      parameters:
+      - name: kelas
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+  /api/v1/kelas/{kelas}/pulihkan:
+    post:
+      tags:
+      - Kelas & keanggotaan
+      summary: (admin)
+      operationId: kelas_pulihkan
+      responses:
+        '200':
+          description: Berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 'Tidak berwenang (code: forbidden)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: 'Tidak ditemukan (code: not_found)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: 'Konflik aturan bisnis. Kode kemungkinan: homeroom_teacher_inactive'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: 'Validasi gagal (code: validation_error, errors per field)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: POST /kelas/{kelas}/pulihkan (admin)
+      x-akses:
+        policy:
+        - pulihkan
+      parameters:
+      - name: kelas
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+  /api/v1/kelas/{kelas}/wali:
+    put:
+      tags:
+      - Kelas & keanggotaan
+      summary: (admin)
+      operationId: kelas_wali
+      responses:
+        '200':
+          description: Berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 'Tidak berwenang (code: forbidden)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: 'Tidak ditemukan (code: not_found)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: 'Validasi gagal (code: validation_error, errors per field)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: PUT /kelas/{kelas}/wali (admin)
+      x-akses:
+        policy:
+        - gantiWali
+      parameters:
+      - name: kelas
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id_wali:
+                  type: integer
+              required:
+              - id_wali
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+  /api/v1/kuis:
+    get:
+      tags:
+      - Kuis
+      summary: Daftar kuis yang boleh dilihat
+      operationId: kuis_index
+      responses:
+        '200':
+          description: Berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 'Tidak berwenang (code: forbidden)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: 'Validasi gagal (code: validation_error, errors per field)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: GET /kuis
+      x-akses:
+        policy:
+        - viewAny
+      parameters:
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: cari
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: urut
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: arah
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - asc
+          - desc
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+  /api/v1/kuis/{kuis}:
+    get:
+      tags:
+      - Kuis
+      summary: Detail kuis (tautan Google Forms)
+      operationId: kuis_show
+      responses:
+        '200':
+          description: Berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/KuisResource'
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 'Tidak berwenang (code: forbidden)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: 'Tidak ditemukan (code: not_found)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: GET /kuis/{kuis}
+      x-akses:
+        policy:
+        - view
+      parameters:
+      - name: kuis
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+    patch:
+      tags:
+      - Kuis
+      summary: Ubah judul/tautan kuis (guru pengampu)
+      operationId: kuis_update
+      responses:
+        '200':
+          description: Berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/KuisResource'
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 'Tidak berwenang (code: forbidden)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: 'Tidak ditemukan (code: not_found)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: 'Validasi gagal (code: validation_error, errors per field)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: PATCH /kuis/{kuis}
+      x-akses:
+        policy:
+        - update
+      parameters:
+      - name: kuis
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                judul:
+                  type: string
+                tautan_google_form:
+                  type: string
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+    delete:
+      tags:
+      - Kuis
+      summary: hanya bila belum ada nilai (409 quiz_has_grades).
+      operationId: kuis_destroy
+      responses:
+        '204':
+          description: Berhasil
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 'Tidak berwenang (code: forbidden)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: 'Tidak ditemukan (code: not_found)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: 'Konflik aturan bisnis. Kode kemungkinan: quiz_has_grades'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: DELETE /kuis/{kuis} — hanya bila belum ada nilai (409 quiz_has_grades).
+      x-akses:
+        policy:
+        - delete
+      parameters:
+      - name: kuis
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+  /api/v1/kuis/{kuis}/nilai:
+    post:
+      tags:
+      - Nilai
+      summary: Catat nilai kuis seorang siswa (guru pengampu)
+      operationId: nilai_kuis
+      responses:
+        '201':
+          description: Berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 'Tidak berwenang (code: forbidden)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: 'Tidak ditemukan (code: not_found)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: 'Konflik aturan bisnis. Kode kemungkinan: grade_exists'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: 'Validasi gagal (code: validation_error, errors per field)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: POST /kuis/{kuis}/nilai
+      x-akses:
+        policy:
+        - beri
+      parameters:
+      - name: kuis
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id_siswa:
+                  type: integer
+                nilai:
+                  type: string
+                umpan_balik:
+                  type: string
+              required:
+              - id_siswa
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+  /api/v1/mapel:
+    get:
+      tags:
+      - Mata pelajaran
+      summary: 'admin: semua; guru: yang diampu; siswa: mapel pada jadwal kelasnya.'
+      operationId: mapel_index
+      responses:
+        '200':
+          description: Berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/MataPelajaranResource'
+                  links:
+                    type: object
+                  meta:
+                    $ref: '#/components/schemas/PaginationMeta'
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 'Tidak berwenang (code: forbidden)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: 'Validasi gagal (code: validation_error, errors per field)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: 'GET /mapel — admin: semua; guru: yang diampu; siswa: mapel pada jadwal kelasnya.'
+      x-akses:
+        policy:
+        - viewAny
+      parameters:
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: cari
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: urut
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: arah
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - asc
+          - desc
+      - name: id_guru
+        in: query
+        required: false
+        schema:
+          type: integer
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+    post:
+      tags:
+      - Mata pelajaran
+      summary: (admin)
+      operationId: mapel_store
+      responses:
+        '201':
+          description: Berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 'Tidak berwenang (code: forbidden)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: 'Validasi gagal (code: validation_error, errors per field)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: POST /mapel (admin)
+      x-akses:
+        policy:
+        - create
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nama_mapel:
+                  type: string
+                id_guru:
+                  type: integer
+              required:
+              - nama_mapel
+              - id_guru
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+  /api/v1/mapel/{mapel}:
+    get:
+      tags:
+      - Mata pelajaran
+      summary: Detail mata pelajaran
+      operationId: mapel_show
+      responses:
+        '200':
+          description: Berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 'Tidak berwenang (code: forbidden)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: 'Tidak ditemukan (code: not_found)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: GET /mapel/{mapel}
+      x-akses:
+        policy:
+        - view
+      parameters:
+      - name: mapel
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+    patch:
+      tags:
+      - Mata pelajaran
+      summary: (admin) — nama saja.
+      operationId: mapel_update
+      responses:
+        '200':
+          description: Berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 'Tidak berwenang (code: forbidden)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: 'Tidak ditemukan (code: not_found)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: 'Validasi gagal (code: validation_error, errors per field)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: PATCH /mapel/{mapel} (admin) — nama saja.
+      x-akses:
+        policy:
+        - update
+      parameters:
+      - name: mapel
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nama_mapel:
+                  type: string
+              required:
+              - nama_mapel
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+  /api/v1/mapel/{mapel}/arsipkan:
+    post:
+      tags:
+      - Mata pelajaran
+      summary: (admin)
+      operationId: mapel_arsipkan
+      responses:
+        '200':
+          description: Berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 'Tidak berwenang (code: forbidden)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: 'Tidak ditemukan (code: not_found)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: 'Konflik aturan bisnis. Kode kemungkinan: subject_has_upcoming_schedule'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: 'Validasi gagal (code: validation_error, errors per field)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: POST /mapel/{mapel}/arsipkan (admin)
+      x-akses:
+        policy:
+        - arsipkan
+      parameters:
+      - name: mapel
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+  /api/v1/mapel/{mapel}/guru:
+    put:
+      tags:
+      - Mata pelajaran
+      summary: (admin) — jadwal mendatang ikut dialihkan ke guru baru.
+      operationId: mapel_guru
+      responses:
+        '200':
+          description: Berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 'Tidak berwenang (code: forbidden)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: 'Tidak ditemukan (code: not_found)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: 'Konflik aturan bisnis. Kode kemungkinan: schedule_conflict'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: 'Validasi gagal (code: validation_error, errors per field)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: PUT /mapel/{mapel}/guru (admin) — jadwal mendatang ikut dialihkan ke guru baru.
+      x-akses:
+        policy:
+        - gantiGuru
+      parameters:
+      - name: mapel
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id_guru:
+                  type: integer
+              required:
+              - id_guru
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+  /api/v1/mapel/{mapel}/kuis:
+    get:
+      tags:
+      - Kuis
+      summary: Daftar kuis satu mapel
+      operationId: kuis_mapel
+      responses:
+        '200':
+          description: Berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 'Tidak berwenang (code: forbidden)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: 'Tidak ditemukan (code: not_found)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: GET /mapel/{mapel}/kuis
+      x-akses:
+        policy:
+        - view
+      parameters:
+      - name: mapel
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+    post:
+      tags:
+      - Kuis
+      summary: Buat kuis (guru pengampu); validasi tautan Google Forms
+      operationId: kuis_store
+      responses:
+        '201':
+          description: Berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/KuisResource'
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 'Tidak berwenang (code: forbidden)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: 'Tidak ditemukan (code: not_found)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: 'Validasi gagal (code: validation_error, errors per field)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: POST /mapel/{mapel}/kuis
+      x-akses:
+        policy:
+        - create
+      parameters:
+      - name: mapel
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                judul:
+                  type: string
+                tautan_google_form:
+                  type: string
+              required:
+              - judul
+              - tautan_google_form
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+  /api/v1/mapel/{mapel}/materi:
+    get:
+      tags:
+      - Materi
+      summary: Daftar materi satu mapel
+      operationId: materi_index
+      responses:
+        '200':
+          description: Berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/MateriResource'
+                  links:
+                    type: object
+                  meta:
+                    $ref: '#/components/schemas/PaginationMeta'
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 'Tidak berwenang (code: forbidden)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: 'Tidak ditemukan (code: not_found)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: GET /mapel/{mapel}/materi
+      x-akses:
+        policy:
+        - view
+      parameters:
+      - name: mapel
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+    post:
+      tags:
+      - Materi
+      summary: Unggah materi (guru pengampu, multipart)
+      operationId: materi_store
+      responses:
+        '201':
+          description: Berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/MateriResource'
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 'Tidak berwenang (code: forbidden)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: 'Tidak ditemukan (code: not_found)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: 'Validasi gagal (code: validation_error, errors per field)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: POST /mapel/{mapel}/materi
+      x-akses:
+        policy:
+        - create
+      parameters:
+      - name: mapel
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                judul:
+                  type: string
+                file:
+                  type: string
+                  format: binary
+              required:
+              - judul
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+  /api/v1/mapel/{mapel}/nilai:
+    get:
+      tags:
+      - Nilai
+      summary: rekap per mapel (tugas + kuis), tanpa nilai akhir.
+      operationId: nilai_mapel
+      responses:
+        '200':
+          description: Berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 'Tidak berwenang (code: forbidden)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: 'Tidak ditemukan (code: not_found)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: GET /mapel/{mapel}/nilai — rekap per mapel (tugas + kuis), tanpa nilai akhir.
+      x-akses:
+        policy:
+        - lihatNilai
+      parameters:
+      - name: mapel
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+  /api/v1/mapel/{mapel}/pengumuman:
+    get:
+      tags:
+      - Pengumuman
+      summary: pengumuman cakupan mapel untuk satu mapel.
+      operationId: pengumuman_mapel
+      responses:
+        '200':
+          description: Berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 'Tidak berwenang (code: forbidden)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: 'Tidak ditemukan (code: not_found)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: GET /mapel/{mapel}/pengumuman — pengumuman cakupan mapel untuk satu mapel.
+      x-akses:
+        policy:
+        - view
+      parameters:
+      - name: mapel
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+  /api/v1/mapel/{mapel}/pulihkan:
+    post:
+      tags:
+      - Mata pelajaran
+      summary: (admin)
+      operationId: mapel_pulihkan
+      responses:
+        '200':
+          description: Berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 'Tidak berwenang (code: forbidden)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: 'Tidak ditemukan (code: not_found)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: 'Konflik aturan bisnis. Kode kemungkinan: teacher_inactive'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: 'Validasi gagal (code: validation_error, errors per field)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: POST /mapel/{mapel}/pulihkan (admin)
+      x-akses:
+        policy:
+        - pulihkan
+      parameters:
+      - name: mapel
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+  /api/v1/mapel/{mapel}/tugas:
+    get:
+      tags:
+      - Tugas
+      summary: Daftar tugas satu mapel
+      operationId: tugas_mapel
+      responses:
+        '200':
+          description: Berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 'Tidak berwenang (code: forbidden)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: 'Tidak ditemukan (code: not_found)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: GET /mapel/{mapel}/tugas
+      x-akses:
+        policy:
+        - view
+      parameters:
+      - name: mapel
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+    post:
+      tags:
+      - Tugas
+      summary: Buat tugas (guru pengampu, multipart bila ada lampiran)
+      operationId: tugas_store
+      responses:
+        '201':
+          description: Berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 'Tidak berwenang (code: forbidden)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: 'Tidak ditemukan (code: not_found)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: 'Validasi gagal (code: validation_error, errors per field)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: POST /mapel/{mapel}/tugas
+      x-akses:
+        policy:
+        - create
+      parameters:
+      - name: mapel
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                judul:
+                  type: string
+                instruksi:
+                  type: string
+                batas_waktu:
+                  type: string
+                  format: date-time
+                lampiran:
+                  type: string
+                  format: binary
+              required:
+              - judul
+              - instruksi
+              - batas_waktu
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+  /api/v1/materi/{materi}:
+    get:
+      tags:
+      - Materi
+      summary: Detail materi
+      operationId: materi_show
+      responses:
+        '200':
+          description: Berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/MateriResource'
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 'Tidak berwenang (code: forbidden)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: 'Tidak ditemukan (code: not_found)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: GET /materi/{materi}
+      x-akses:
+        policy:
+        - view
+      parameters:
+      - name: materi
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+    patch:
+      tags:
+      - Materi
+      summary: Ubah judul materi (guru pengampu)
+      operationId: materi_update
+      responses:
+        '200':
+          description: Berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/MateriResource'
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 'Tidak berwenang (code: forbidden)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: 'Tidak ditemukan (code: not_found)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: 'Validasi gagal (code: validation_error, errors per field)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: PATCH /materi/{materi}
+      x-akses:
+        policy:
+        - update
+      parameters:
+      - name: materi
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                judul:
+                  type: string
+              required:
+              - judul
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+    delete:
+      tags:
+      - Materi
+      summary: menghapus baris dan file.
+      operationId: materi_destroy
+      responses:
+        '204':
+          description: Berhasil
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 'Tidak berwenang (code: forbidden)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: 'Tidak ditemukan (code: not_found)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: DELETE /materi/{materi} — menghapus baris dan file.
+      x-akses:
+        policy:
+        - delete
+      parameters:
+      - name: materi
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+  /api/v1/materi/{materi}/file:
+    post:
+      tags:
+      - Materi
+      summary: mengganti file materi.
+      operationId: materi_file_ganti
+      responses:
+        '200':
+          description: Berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/MateriResource'
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 'Tidak berwenang (code: forbidden)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: 'Tidak ditemukan (code: not_found)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: 'Validasi gagal (code: validation_error, errors per field)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: POST /materi/{materi}/file — mengganti file materi.
+      x-akses:
+        policy:
+        - update
+      parameters:
+      - name: materi
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+    get:
+      tags:
+      - Materi
+      summary: unduh; izin sama dengan melihat materi.
+      operationId: materi_file
+      responses:
+        '200':
+          description: Berhasil
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 'Tidak berwenang (code: forbidden)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: 'Tidak ditemukan (code: not_found)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: GET /materi/{materi}/file — unduh; izin sama dengan melihat materi.
+      x-akses:
+        policy:
+        - view
+      parameters:
+      - name: materi
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+  /api/v1/nilai:
+    get:
+      tags:
+      - Nilai
+      summary: dibatasi per peran.
+      operationId: nilai_index
+      responses:
+        '200':
+          description: Berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 'Tidak berwenang (code: forbidden)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: 'Validasi gagal (code: validation_error, errors per field)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: GET /nilai — dibatasi per peran.
+      x-akses:
+        policy:
+        - viewAny
+      parameters:
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: cari
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: urut
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: arah
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - asc
+          - desc
+      - name: id_mapel
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: id_siswa
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: id_tugas
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: id_kuis
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: sumber
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - tugas
+          - kuis
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+  /api/v1/nilai/saya:
+    get:
+      tags:
+      - Nilai
+      summary: khusus siswa.
+      operationId: nilai_saya
+      responses:
+        '200':
+          description: Berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 'Tidak berwenang (code: forbidden)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: 'Validasi gagal (code: validation_error, errors per field)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: GET /nilai/saya — khusus siswa.
+      x-akses:
+        peran:
+        - siswa
+        policy:
+        - viewAny
+      parameters:
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: cari
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: urut
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: arah
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - asc
+          - desc
+      - name: id_mapel
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: id_siswa
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: id_tugas
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: id_kuis
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: sumber
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - tugas
+          - kuis
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+  /api/v1/nilai/{nilai}:
+    get:
+      tags:
+      - Nilai
+      summary: Detail nilai
+      operationId: nilai_show
+      responses:
+        '200':
+          description: Berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 'Tidak berwenang (code: forbidden)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: 'Tidak ditemukan (code: not_found)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: GET /nilai/{nilai}
+      x-akses:
+        policy:
+        - view
+      parameters:
+      - name: nilai
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+    patch:
+      tags:
+      - Nilai
+      summary: ubah nilai dan/atau umpan balik.
+      operationId: nilai_update
+      responses:
+        '200':
+          description: Berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 'Tidak berwenang (code: forbidden)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: 'Tidak ditemukan (code: not_found)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: 'Validasi gagal (code: validation_error, errors per field)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: PATCH /nilai/{nilai} — ubah nilai dan/atau umpan balik.
+      x-akses:
+        policy:
+        - update
+      parameters:
+      - name: nilai
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nilai:
+                  type: string
+                umpan_balik:
+                  type: string
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+  /api/v1/pengumpulan/saya:
+    get:
+      tags:
+      - Pengumpulan tugas
+      summary: seluruh pengumpulan milik siswa yang login.
+      operationId: pengumpulan_saya
+      responses:
+        '200':
+          description: Berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 'Tidak berwenang (code: forbidden)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: GET /pengumpulan/saya — seluruh pengumpulan milik siswa yang login.
+      x-akses:
+        peran:
+        - siswa
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+  /api/v1/pengumpulan/{pengumpulan}:
+    get:
+      tags:
+      - Pengumpulan tugas
+      summary: admin, pemilik, guru pengampu; siswa lain 403.
+      operationId: pengumpulan_show
+      responses:
+        '200':
+          description: Berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/PengumpulanResource'
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 'Tidak berwenang (code: forbidden)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: 'Tidak ditemukan (code: not_found)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: GET /pengumpulan/{pengumpulan} — admin, pemilik, guru pengampu; siswa lain 403.
+      x-akses:
+        policy:
+        - view
+      parameters:
+      - name: pengumpulan
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+  /api/v1/pengumpulan/{pengumpulan}/file:
+    get:
+      tags:
+      - Pengumpulan tugas
+      summary: Unduh jawaban (pemilik, guru pengampu, admin)
+      operationId: pengumpulan_file
+      responses:
+        '200':
+          description: Berhasil
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 'Tidak berwenang (code: forbidden)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: 'Tidak ditemukan (code: not_found)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: GET /pengumpulan/{pengumpulan}/file
+      x-akses:
+        policy:
+        - view
+      parameters:
+      - name: pengumpulan
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+  /api/v1/pengumpulan/{pengumpulan}/nilai:
+    post:
+      tags:
+      - Nilai
+      summary: Beri nilai pengumpulan tugas (guru pengampu)
+      operationId: nilai_tugas
+      responses:
+        '201':
+          description: Berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 'Tidak berwenang (code: forbidden)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: 'Tidak ditemukan (code: not_found)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: 'Konflik aturan bisnis. Kode kemungkinan: grade_exists'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: 'Validasi gagal (code: validation_error, errors per field)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: POST /pengumpulan/{pengumpulan}/nilai
+      x-akses:
+        policy:
+        - beri
+      parameters:
+      - name: pengumpulan
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nilai:
+                  type: string
+                umpan_balik:
+                  type: string
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+  /api/v1/pengumuman:
+    get:
+      tags:
+      - Pengumuman
+      summary: hanya yang boleh dibaca pemanggil.
+      operationId: pengumuman_index
+      responses:
+        '200':
+          description: Berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 'Tidak berwenang (code: forbidden)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: 'Validasi gagal (code: validation_error, errors per field)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: GET /pengumuman — hanya yang boleh dibaca pemanggil.
+      x-akses:
+        policy:
+        - viewAny
+      parameters:
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: cari
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: urut
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: arah
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - asc
+          - desc
+      - name: cakupan
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: id_mapel
+        in: query
+        required: false
+        schema:
+          type: integer
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+    post:
+      tags:
+      - Pengumuman
+      summary: Buat pengumuman global (admin) atau mapel (guru pengampu/admin)
+      operationId: pengumuman_store
+      responses:
+        '201':
+          description: Berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 'Tidak berwenang (code: forbidden)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: 'Validasi gagal (code: validation_error, errors per field)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: POST /pengumuman
+      x-akses:
+        policy:
+        - create
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                judul:
+                  type: string
+                isi:
+                  type: string
+                cakupan:
+                  type: string
+                id_mapel:
+                  type: integer
+              required:
+              - judul
+              - isi
+              - cakupan
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+  /api/v1/pengumuman/{pengumuman}:
+    get:
+      tags:
+      - Pengumuman
+      summary: Detail pengumuman
+      operationId: pengumuman_show
+      responses:
+        '200':
+          description: Berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 'Tidak berwenang (code: forbidden)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: 'Tidak ditemukan (code: not_found)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: GET /pengumuman/{pengumuman}
+      x-akses:
+        policy:
+        - view
+      parameters:
+      - name: pengumuman
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+    patch:
+      tags:
+      - Pengumuman
+      summary: judul/isi saja.
+      operationId: pengumuman_update
+      responses:
+        '200':
+          description: Berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 'Tidak berwenang (code: forbidden)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: 'Tidak ditemukan (code: not_found)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: 'Validasi gagal (code: validation_error, errors per field)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: PATCH /pengumuman/{pengumuman} — judul/isi saja.
+      x-akses:
+        policy:
+        - update
+      parameters:
+      - name: pengumuman
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                judul:
+                  type: string
+                isi:
+                  type: string
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+    delete:
+      tags:
+      - Pengumuman
+      summary: permanen (tidak ada kolom arsip pada ERD).
+      operationId: pengumuman_destroy
+      responses:
+        '204':
+          description: Berhasil
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 'Tidak berwenang (code: forbidden)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: 'Tidak ditemukan (code: not_found)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: DELETE /pengumuman/{pengumuman} — permanen (tidak ada kolom arsip pada ERD).
+      x-akses:
+        policy:
+        - delete
+      parameters:
+      - name: pengumuman
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+  /api/v1/presensi:
+    get:
+      tags:
+      - Presensi
+      summary: Daftar presensi yang boleh dilihat (dengan filter)
+      operationId: presensi_index
+      responses:
+        '200':
+          description: Berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 'Tidak berwenang (code: forbidden)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: 'Validasi gagal (code: validation_error, errors per field)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: GET /presensi
+      x-akses:
+        policy:
+        - viewAny
+      parameters:
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: cari
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: urut
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: arah
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - asc
+          - desc
+      - name: dari
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date
+      - name: sampai
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date
+      - name: id_kelas
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: id_mapel
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: id_siswa
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: id_jadwal
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: status_kehadiran
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: status_validasi_lokasi
+        in: query
+        required: false
+        schema:
+          type: string
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+  /api/v1/presensi/saya:
+    get:
+      tags:
+      - Presensi
+      summary: riwayat presensi milik sendiri (siswa).
+      operationId: presensi_saya
+      responses:
+        '200':
+          description: Berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 'Tidak berwenang (code: forbidden)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: 'Validasi gagal (code: validation_error, errors per field)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: GET /presensi/saya — riwayat presensi milik sendiri (siswa).
+      x-akses:
+        peran:
+        - siswa
+        policy:
+        - viewAny
+      parameters:
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: cari
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: urut
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: arah
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - asc
+          - desc
+      - name: dari
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date
+      - name: sampai
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date
+      - name: id_kelas
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: id_mapel
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: id_siswa
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: id_jadwal
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: status_kehadiran
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: status_validasi_lokasi
+        in: query
+        required: false
+        schema:
+          type: string
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+  /api/v1/presensi/{presensi}:
+    get:
+      tags:
+      - Presensi
+      summary: Detail presensi
+      operationId: presensi_show
+      responses:
+        '200':
+          description: Berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/PresensiResource'
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 'Tidak berwenang (code: forbidden)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: 'Tidak ditemukan (code: not_found)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: GET /presensi/{presensi}
+      x-akses:
+        policy:
+        - view
+      parameters:
+      - name: presensi
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+    patch:
+      tags:
+      - Presensi
+      summary: koreksi status_kehadiran (guru pada jadwal / admin).
+      operationId: presensi_update
+      responses:
+        '200':
+          description: Berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/PresensiResource'
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 'Tidak berwenang (code: forbidden)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: 'Tidak ditemukan (code: not_found)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: 'Validasi gagal (code: validation_error, errors per field)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: PATCH /presensi/{presensi} — koreksi status_kehadiran (guru pada jadwal / admin).
+      x-akses:
+        policy:
+        - update
+      parameters:
+      - name: presensi
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status_kehadiran:
+                  type: string
+              required:
+              - status_kehadiran
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+  /api/v1/profil:
+    get:
+      tags:
+      - Profil
+      summary: Profil sendiri
+      operationId: profil_show
+      responses:
+        '200':
+          description: Berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/PenggunaResource'
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: GET /profil
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+    patch:
+      tags:
+      - Profil
+      summary: hanya email & password.
+      operationId: profil_update
+      responses:
+        '200':
+          description: Berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/PenggunaResource'
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: 'Validasi gagal (code: validation_error, errors per field)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: PATCH /profil — hanya email & password.
+      x-akses:
+        policy:
+        - updateProfil
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                password_saat_ini:
+                  type: string
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+  /api/v1/rekap/presensi:
+    get:
+      tags:
+      - Presensi
+      summary: 'hitungan kehadiran per siswa untuk periode (siswa: dirinya; guru: jadwalnya; admin: semua).'
+      operationId: presensi_rekap
+      responses:
+        '200':
+          description: Berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/RekapPresensiResource'
+                  links:
+                    type: object
+                  meta:
+                    $ref: '#/components/schemas/PaginationMeta'
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 'Tidak berwenang (code: forbidden)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: 'Validasi gagal (code: validation_error, errors per field)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: 'GET /rekap/presensi — hitungan kehadiran per siswa untuk periode (siswa: dirinya; guru: jadwalnya; admin: semua).'
+      parameters:
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: dari
+        in: query
+        required: true
+        schema:
+          type: string
+          format: date
+      - name: sampai
+        in: query
+        required: true
+        schema:
+          type: string
+          format: date
+      - name: id_kelas
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: id_mapel
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: id_guru
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: id_siswa
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: id_jadwal
+        in: query
+        required: false
+        schema:
+          type: integer
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+  /api/v1/siswa/{siswa}/jadwal:
+    get:
+      tags:
+      - Jadwal
+      summary: Jadwal seorang siswa (admin, siswa itu, atau guru terkait)
+      operationId: jadwal_siswa
+      responses:
+        '200':
+          description: Berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 'Tidak berwenang (code: forbidden)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: 'Tidak ditemukan (code: not_found)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: GET /siswa/{siswa}/jadwal
+      x-akses:
+        policy:
+        - viewJadwal
+      parameters:
+      - name: siswa
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+  /api/v1/siswa/{siswa}/kelas:
+    get:
+      tags:
+      - Kelas & keanggotaan
+      summary: 'kelas yang diikuti seorang siswa. Admin: semua; siswa: miliknya; guru: hanya irisan dengan kelas yang diwalikan/diajarny'
+      operationId: siswa_kelas
+      responses:
+        '200':
+          description: Berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/KelasResource'
+                  links:
+                    type: object
+                  meta:
+                    $ref: '#/components/schemas/PaginationMeta'
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 'Tidak berwenang (code: forbidden)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: 'Tidak ditemukan (code: not_found)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: 'Validasi gagal (code: validation_error, errors per field)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: 'GET /siswa/{siswa}/kelas — kelas yang diikuti seorang siswa. Admin: semua; siswa: miliknya; guru: hanya irisan dengan kelas
+        yang diwalikan/diajarnya (KelasPolicy::scope).'
+      x-akses:
+        policy:
+        - viewAny
+        - viewKelas
+      parameters:
+      - name: siswa
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: cari
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: urut
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: arah
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - asc
+          - desc
+      - name: id_wali
+        in: query
+        required: false
+        schema:
+          type: integer
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+  /api/v1/siswa/{siswa}/nilai:
+    get:
+      tags:
+      - Nilai
+      summary: guru hanya melihat nilai pada mapel yang diampunya.
+      operationId: nilai_siswa
+      responses:
+        '200':
+          description: Berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 'Tidak berwenang (code: forbidden)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: 'Tidak ditemukan (code: not_found)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: GET /siswa/{siswa}/nilai — guru hanya melihat nilai pada mapel yang diampunya.
+      x-akses:
+        policy:
+        - viewNilai
+      parameters:
+      - name: siswa
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+  /api/v1/tugas:
+    get:
+      tags:
+      - Tugas
+      summary: tugas yang tersedia bagi pemanggil (dibatasi peran); status=terbuka untuk yang masih menerima.
+      operationId: tugas_index
+      responses:
+        '200':
+          description: Berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 'Tidak berwenang (code: forbidden)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: 'Validasi gagal (code: validation_error, errors per field)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: GET /tugas — tugas yang tersedia bagi pemanggil (dibatasi peran); status=terbuka untuk yang masih menerima.
+      x-akses:
+        policy:
+        - viewAny
+      parameters:
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: cari
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: urut
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: arah
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - asc
+          - desc
+      - name: id_mapel
+        in: query
+        required: false
+        schema:
+          type: integer
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+  /api/v1/tugas/{tugas}:
+    get:
+      tags:
+      - Tugas
+      summary: Detail tugas
+      operationId: tugas_show
+      responses:
+        '200':
+          description: Berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 'Tidak berwenang (code: forbidden)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: 'Tidak ditemukan (code: not_found)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: GET /tugas/{tugas}
+      x-akses:
+        policy:
+        - view
+      parameters:
+      - name: tugas
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+    patch:
+      tags:
+      - Tugas
+      summary: Ubah tugas (guru pengampu)
+      operationId: tugas_update
+      responses:
+        '200':
+          description: Berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 'Tidak berwenang (code: forbidden)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: 'Tidak ditemukan (code: not_found)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: 'Validasi gagal (code: validation_error, errors per field)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: PATCH /tugas/{tugas}
+      x-akses:
+        policy:
+        - update
+      parameters:
+      - name: tugas
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                judul:
+                  type: string
+                instruksi:
+                  type: string
+                batas_waktu:
+                  type: string
+                  format: date-time
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+    delete:
+      tags:
+      - Tugas
+      summary: hanya bila belum ada pengumpulan (409 task_has_submissions).
+      operationId: tugas_destroy
+      responses:
+        '204':
+          description: Berhasil
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 'Tidak berwenang (code: forbidden)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: 'Tidak ditemukan (code: not_found)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: 'Konflik aturan bisnis. Kode kemungkinan: task_has_submissions'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: DELETE /tugas/{tugas} — hanya bila belum ada pengumpulan (409 task_has_submissions).
+      x-akses:
+        policy:
+        - delete
+      parameters:
+      - name: tugas
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+  /api/v1/tugas/{tugas}/lampiran:
+    get:
+      tags:
+      - Tugas
+      summary: Unduh lampiran tugas
+      operationId: tugas_lampiran
+      responses:
+        '200':
+          description: Berhasil
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 'Tidak berwenang (code: forbidden)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: 'Tidak ditemukan (code: not_found)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: GET /tugas/{tugas}/lampiran
+      x-akses:
+        policy:
+        - view
+      parameters:
+      - name: tugas
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+    post:
+      tags:
+      - Tugas
+      summary: '(multipart: lampiran)'
+      operationId: tugas_lampiran_ganti
+      responses:
+        '200':
+          description: Berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 'Tidak berwenang (code: forbidden)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: 'Tidak ditemukan (code: not_found)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: 'Validasi gagal (code: validation_error, errors per field)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: 'POST /tugas/{tugas}/lampiran (multipart: lampiran)'
+      x-akses:
+        policy:
+        - update
+      parameters:
+      - name: tugas
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+    delete:
+      tags:
+      - Tugas
+      summary: Hapus lampiran tugas
+      operationId: tugas_lampiran_hapus
+      responses:
+        '200':
+          description: Berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 'Tidak berwenang (code: forbidden)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: 'Tidak ditemukan (code: not_found)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: DELETE /tugas/{tugas}/lampiran
+      x-akses:
+        policy:
+        - update
+      parameters:
+      - name: tugas
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+  /api/v1/tugas/{tugas}/pengumpulan:
+    get:
+      tags:
+      - Pengumpulan tugas
+      summary: daftar pengumpulan satu tugas (guru pengampu, admin).
+      operationId: pengumpulan_index
+      responses:
+        '200':
+          description: Berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 'Tidak berwenang (code: forbidden)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: 'Tidak ditemukan (code: not_found)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: GET /tugas/{tugas}/pengumpulan — daftar pengumpulan satu tugas (guru pengampu, admin).
+      x-akses:
+        policy:
+        - lihatPengumpulan
+      parameters:
+      - name: tugas
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+    post:
+      tags:
+      - Pengumpulan tugas
+      summary: '(siswa; multipart: file)'
+      operationId: pengumpulan_store
+      responses:
+        '201':
+          description: Berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/PengumpulanResource'
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 'Tidak berwenang (code: forbidden)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: 'Tidak ditemukan (code: not_found)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: 'Konflik aturan bisnis. Kode kemungkinan: already_submitted, deadline_passed'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: 'Validasi gagal (code: validation_error, errors per field)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: 'POST /tugas/{tugas}/pengumpulan (siswa; multipart: file)'
+      x-akses:
+        policy:
+        - create
+      parameters:
+      - name: tugas
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+  /api/v1/tugas/{tugas}/pengumpulan/revisi:
+    post:
+      tags:
+      - Pengumpulan tugas
+      summary: '(siswa; multipart: file)'
+      operationId: pengumpulan_revisi
+      responses:
+        '200':
+          description: Berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/PengumpulanResource'
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 'Tidak berwenang (code: forbidden)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: 'Tidak ditemukan (code: not_found)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: 'Konflik aturan bisnis. Kode kemungkinan: already_graded, deadline_passed'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: 'Validasi gagal (code: validation_error, errors per field)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: 'POST /tugas/{tugas}/pengumpulan/revisi (siswa; multipart: file)'
+      x-akses:
+        policy:
+        - create
+      parameters:
+      - name: tugas
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+  /api/v1/tugas/{tugas}/pengumpulan/saya:
+    get:
+      tags:
+      - Pengumpulan tugas
+      summary: status pengumpulan milik sendiri pada satu tugas.
+      operationId: pengumpulan_tugas_saya
+      responses:
+        '200':
+          description: Berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/PengumpulanResource'
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 'Tidak berwenang (code: forbidden)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: 'Tidak ditemukan (code: not_found)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: GET /tugas/{tugas}/pengumpulan/saya — status pengumpulan milik sendiri pada satu tugas.
+      x-akses:
+        peran:
+        - siswa
+        policy:
+        - view
+      parameters:
+      - name: tugas
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+  /api/v1/tugas/{tugas}/tutup:
+    post:
+      tags:
+      - Tugas
+      summary: menghentikan pengumpulan sekarang (idempotent).
+      operationId: tugas_tutup
+      responses:
+        '200':
+          description: Berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        '401':
+          description: 'Belum login / akun nonaktif (code: unauthenticated)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 'Tidak berwenang (code: forbidden)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: 'Tidak ditemukan (code: not_found)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: 'Validasi gagal (code: validation_error, errors per field)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 'Terlalu banyak permintaan (code: too_many_requests, header Retry-After)'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      description: POST /tugas/{tugas}/tutup — menghentikan pengumpulan sekarang (idempotent).
+      x-akses:
+        policy:
+        - tutup
+      parameters:
+      - name: tugas
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+      security:
+      - cookieAuth: []
+        csrfHeader: []
+  /sanctum/csrf-cookie:
+    get:
+      tags:
+      - Autentikasi
+      summary: Menerbitkan cookie XSRF-TOKEN (panggil sekali sebelum login dari SPA)
+      operationId: sanctum_csrf_cookie
+      responses:
+        '204':
+          description: Cookie XSRF-TOKEN dan sesi diterbitkan
+      security: []
+components:
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: laravel_session
+      description: Cookie sesi (HttpOnly) diterbitkan saat login.
+    csrfHeader:
+      type: apiKey
+      in: header
+      name: X-XSRF-TOKEN
+      description: Isi dari cookie XSRF-TOKEN (didekode URL); wajib untuk metode selain GET.
+  schemas:
+    Error:
+      type: object
+      required:
+      - message
+      - code
+      properties:
+        message:
+          type: string
+        code:
+          type: string
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+        request_id:
+          type: string
+    PaginationMeta:
+      type: object
+      properties:
+        current_page:
+          type: integer
+        per_page:
+          type: integer
+        total:
+          type: integer
+        last_page:
+          type: integer
+        from:
+          type: integer
+          nullable: true
+        to:
+          type: integer
+          nullable: true
+    PenggunaResource:
+      type: object
+      description: Representasi pengguna untuk API. Tidak pernah memuat password / remember_token. Pengguna
+      properties:
+        id_pengguna: {}
+        nisn: {}
+        nip: {}
+        username: {}
+        email: {}
+        peran: {}
+        aktif: {}
+        nonaktif_pada: {}
+    KelasResource:
+      type: object
+      description: Relasi (wali) dan jumlah_siswa hanya muncul bila dimuat controller (with / withCount). Kelas
+      properties:
+        id_kelas: {}
+        nama_kelas: {}
+        id_wali: {}
+        wali: {}
+        jumlah_siswa: {}
+        aktif: {}
+        diarsipkan_pada: {}
+    PenggunaRingkasResource:
+      type: object
+      description: Baris daftar anggota kelas (untuk admin, wali, guru terkait). Tanpa email. Pengguna
+      properties:
+        id_pengguna: {}
+        nisn: {}
+        nip: {}
+        username: {}
+        peran: {}
+        aktif: {}
+    MataPelajaranResource:
+      type: object
+      description: MataPelajaran
+      properties:
+        id_mapel: {}
+        nama_mapel: {}
+        id_guru: {}
+        guru: {}
+        aktif: {}
+        diarsipkan_pada: {}
+    MateriResource:
+      type: object
+      description: Path penyimpanan (kolom "file") bersifat internal dan TIDAK pernah dikirim ke klien; klien mengunduh lewat url_file yang memeriksa
+        izin. Materi
+      properties:
+        id_materi: {}
+        judul: {}
+        id_mapel: {}
+        mapel: {}
+        ekstensi: {}
+        tipe: {}
+        url_file: {}
+        created_at: {}
+        updated_at: {}
+    PengumpulanResource:
+      type: object
+      description: jawaban_file (path internal) tidak dikirim; unduh lewat url_file yang memeriksa izin. PengumpulanTugas
+      properties:
+        id_pengumpulan: {}
+        id_tugas: {}
+        id_siswa: {}
+        siswa: {}
+        tugas: {}
+        status: {}
+        terlambat: {}
+        waktu_kumpul: {}
+        url_file: {}
+    KuisResource:
+      type: object
+      description: Kuis
+      properties:
+        id_kuis: {}
+        judul: {}
+        tautan_google_form: {}
+        id_mapel: {}
+        mapel: {}
+        jumlah_nilai: {}
+        created_at: {}
+        updated_at: {}
+    PresensiResource:
+      type: object
+      description: Koordinat ditampilkan kepada yang berhak melihat presensi (siswa pemilik, guru pada jadwal, admin). jarak_meter/radius_meter
+        hanya ada pada respons check-in (dihitung server, tidak disimpan). Presensi
+      properties:
+        id_presensi: {}
+        id_siswa: {}
+        id_jadwal: {}
+        siswa: {}
+        jadwal: {}
+        waktu_checkin: {}
+        status_kehadiran: {}
+        lokasi_lat: {}
+        lokasi_lng: {}
+        status_validasi_lokasi: {}
+        jarak_meter: {}
+        radius_meter: {}
+        created_at: {}
+        updated_at: {}
+    RosterPresensiResource:
+      type: object
+      description: 'Satu baris roster: siswa kelas + presensinya pada satu jadwal (status "belum_tercatat" bila belum ada). Harus dimuat dengan
+        relasi presensi yang sudah difilter ke jadwal tersebut. Pengguna'
+      properties:
+        id_siswa: {}
+        nisn: {}
+        username: {}
+        akun_aktif: {}
+        status_kehadiran: {}
+        presensi: {}
+    RekapPresensiResource:
+      type: object
+      description: Satu baris rekap (objek hasil query agregat). Hanya hitungan; tidak ada persentase atau nilai akhir. @property-read object
+        $resource
+      properties:
+        id_siswa: {}
+        nisn: {}
+        username: {}
+        total_sesi: {}
+        tercatat: {}
+        belum_tercatat: {}
+        hadir: {}
+        terlambat: {}
+        izin: {}
+        sakit: {}
+        alpa: {}

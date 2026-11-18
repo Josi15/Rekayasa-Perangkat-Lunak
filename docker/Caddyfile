@@ -1,0 +1,32 @@
+{
+	frankenphp
+	order php_server before file_server
+	auto_https off
+	admin off
+}
+
+# Railway menyuntikkan PORT; TLS diakhiri di edge Railway.
+:{$PORT:8080} {
+	root * /app/public
+	encode zstd gzip
+
+	# Tidak pernah menyajikan dotfile / berkas sensitif; storage/ memang di luar docroot.
+	@sensitif path /.* /composer.* /artisan /*.env /*.log
+	respond @sensitif 404
+
+	# Aset Vite ber-hash: cache lama. index.html di-set no-cache oleh Laravel (SpaController).
+	@aset path /assets/*
+	header @aset Cache-Control "public, max-age=31536000, immutable"
+
+	header {
+		-Server
+		-X-Powered-By
+	}
+
+	# Unggahan materi/tugas maks 20 MB per berkas (MATERI_MAX_KB/TUGAS_*_MAX_KB) + overhead multipart.
+	request_body {
+		max_size 30MB
+	}
+
+	php_server
+}

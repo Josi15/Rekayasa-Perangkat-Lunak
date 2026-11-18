@@ -1,0 +1,16 @@
+{
+  "name": "simba",
+  "private": true,
+  "description": "LMS Simba — repo gabungan. Frontend utama: frontend-react-lms-simba; backend: overlay Laravel (backend-laravel-foundation)",
+  "engines": { "node": "^20.19.0 || >=22.12.0" },
+  "scripts": {
+    "setup": "npm --prefix frontend-react-lms-simba install",
+    "dev": "npm --prefix frontend-react-lms-simba run dev:mock",
+    "dev:api": "npm --prefix frontend-react-lms-simba run dev",
+    "build": "npm --prefix frontend-react-lms-simba run build",
+    "lint": "npm --prefix frontend-react-lms-simba run lint",
+    "test": "npm --prefix frontend-react-lms-simba test",
+    "check:routes": "npm --prefix frontend-react-lms-simba run check:routes",
+    "verify": "npm --prefix frontend-react-lms-simba run verify"
+  }
+}

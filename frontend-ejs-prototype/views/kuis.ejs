@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SIMBA Admin – Pusat Integrasi Asesmen Kuis Form & CBT</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/kuis.css">
+</head>
+<body>
+<div class="layout">
+  <%- include('partials/sidebar') %>
+  <div class="main">
+    <%- include('partials/topbar') %>
+    <main class="content">
+
+      <div class="page-head">
+        <div>
+          <p class="crumb">SIMBA Admin › <a href="#">Asesmen Terpadu & CBT</a></p>
+          <h1><%= title %></h1>
+        </div>
+        <div class="head-actions">
+          <button class="btn btn-soft" data-toast="Konfigurasi webhook & API belum dihubungkan ke backend."><i class="bi bi-plugin"></i> Konfigurasi Webhook & API</button>
+          <button class="btn btn-primary" data-toast="Form penjadwalan kuis/ujian belum dihubungkan ke backend."><i class="bi bi-plus-lg"></i> + Jadwalkan Kuis / Ujian Baru</button>
+        </div>
+      </div>
+
+      <section class="kq-sum">
+        <% ringkasan.forEach(r => { %>
+          <article class="card">
+            <div class="kq-top"><p class="label"><%= r.label %></p><span class="icon-box sm <%= r.gray ? 'grayic' : '' %>"><i class="bi <%= r.icon %>"></i></span></div>
+            <p class="big"><%= r.nilai %></p>
+            <p class="kq-note"><% if (r.ketIcon === 'dot') { %><i class="bi bi-circle-fill green dot"></i><% } else { %><i class="bi <%= r.ketIcon %> green"></i><% } %> <%= r.ket %></p>
+          </article>
+        <% }) %>
+      </section>
+
+      <div class="kq-grid">
+        <div class="kq-main">
+          <nav class="kq-tabs" id="tabs">
+            <% tab.forEach((t, i) => { %><button class="kq-tab <%= i === 0 ? 'is-active' : '' %>" data-f="<%= t.key %>"><%= t.label %> <span class="cnt <%= t.dark ? 'dark' : '' %>"><%= t.n %></span></button><% }) %>
+          </nav>
+
+          <section class="card kq-table">
+            <div class="card-head">
+              <div><h2>Daftar Sesi Kuis & CBT Aktif</h2><p class="muted">Monitoring ujian aktual, validitas token kelas, dan transmisi nilai</p></div>
+              <span class="green sync"><i class="bi bi-cloud-check"></i> Dapodik Sync Ready</span>
+            </div>
+            <div class="table-wrap">
+              <table class="table kq-t">
+                <thead><tr><th>Status & Indikator</th><th>Nama Asesmen & Kode</th><th>Platform Integrasi</th><th>Token Masuk</th><th>Peserta</th><th>Aksi</th></tr></thead>
+                <tbody id="baris">
+                  <% asesmen.forEach(a => { const pf = platform[a.platform]; %>
+                  <tr data-status="<%= a.status %>">
+                    <td><span class="st st-<%= a.status %>"><% if (a.status === 'live') { %><i class="bi bi-circle-fill"></i> <% } %><%= statusLabel[a.status] %></span></td>
+                    <td><strong><%= a.nama %></strong><small><%= a.kode %> • <%= a.mapel %></small></td>
+                    <td><span class="plat"><i class="bi <%= pf.icon %> green"></i> <%= pf.label %></span></td>
+                    <td><% if (a.token) { %><code class="tok"><%= a.token %></code><% } else { %><em class="tok-ket"><%= a.tokenKet %></em><% } %></td>
+                    <td><%= a.peserta || '–' %></td>
+                    <td><button class="btn btn-soft sm" data-toast="Detail sesi <%= a.kode %> belum dihubungkan."><%= a.status === 'live' ? 'Pantau' : 'Detail' %></button></td>
+                  </tr>
+                  <% }) %>
+                </tbody>
+              </table>
+            </div>
+            <div class="kq-pager">
+              <span id="info"></span>
+              <nav class="pages" id="halaman" aria-label="Halaman"></nav>
+            </div>
+          </section>
+        </div>
+
+        <aside class="kq-side">
+          <section class="card">
+            <h2 class="kq-h"><i class="bi bi-arrow-repeat green"></i> Generator Token Darurat CBT</h2>
+            <p class="desc">Bypass token sementara (validitas 15 menit) khusus bagi peserta didik yang mengalami kendala putus koneksi, crash browser, atau restart perangkat saat asesmen berlangsung.</p>
+            <form id="formToken" class="tokform" autocomplete="off">
+              <div class="pilih">
+                <label for="sesi">PILIH SESI UJIAN BERJALAN</label>
+                <select id="sesi"><% sesiBerjalan.forEach(s => { %><option><%= s %></option><% }) %></select>
+              </div>
+              <div class="row2">
+                <label class="f">NISN SISWA<input id="nisn" inputmode="numeric" pattern="\d{10}" maxlength="10" placeholder="0061234589" title="NISN terdiri dari 10 digit" required></label>
+                <label class="f">MASA BERLAKU<select id="masa"><option value="15" selected>15 Menit</option><option value="30">30 Menit</option></select></label>
+              </div>
+              <div class="hasil">
+                <small>TOKEN BYPASS DIHASILKAN</small>
+                <div><code id="tokenOut">BP-9204-X</code><button type="button" id="btnSalin" aria-label="Salin token"><i class="bi bi-copy"></i></button></div>
+              </div>
+              <button class="btn btn-primary block" type="submit"><i class="bi bi-key"></i> Rilis Token Darurat Baru</button>
+            </form>
+          </section>
+
+          <section class="card">
+            <h2 class="kq-h"><i class="bi bi-arrow-left-right"></i> Log Sinkronisasi Realtime <i class="bi bi-circle-fill green dot"></i></h2>
+            <p class="desc">Aliran transaksi respon siswa dari Google Forms & CBT SIMBA ke buku nilai leger guru.</p>
+            <ul class="log" id="log">
+              <% log.forEach(l => { %>
+              <li class="<%= l.tipe %>">
+                <div class="l1"><strong class="green"><i class="bi <%= l.tipe === 'nilai' ? 'bi-check2' : 'bi-shield-lock-fill' %>"></i> <%= l.judul %></strong><span class="mono"><%= l.waktu %></span></div>
+                <div class="l2"><%= l.nama %></div>
+                <div class="l3"><span><%= l.ket %></span><% if (l.hasil) { %><b class="green"><%= l.hasil %></b><% } %></div>
+              </li>
+              <% }) %>
+            </ul>
+            <button class="btn btn-soft block" data-toast="Arsip log webhook belum dihubungkan.">Buka Arsip Log Lengkap (Webhook Event)</button>
+          </section>
+        </aside>
+      </div>
+
+      <p class="toast" id="toast" role="status" hidden></p>
+    </main>
+  </div>
+</div>
+<script>window.KUIS_META = { total: <%= total %>, ukuran: <%= ukuran %> };</script>
+<script src="/js/kuis.js"></script>
+</body>
+</html>

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>SIMBA Admin – Jadwal Sekolah &amp; Kalender KBM</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="/css/shell.css">
+  <link rel="stylesheet" href="/css/jadwal.css">
+</head>
+<body>
+<div class="app">
+  <%- include('partials/shell-sidebar') %>
+  <div class="col">
+    <%- include('partials/shell-topbar') %>
+    <main>
+  
+
+  <div class="crumb">SIMBA Admin › <b>Akademik &amp; Penjadwalan</b></div>
+  <div class="head"><h1>Jadwal Sekolah &amp; Kalender KBM</h1><div class="acts"><button class="btn g" data-t="Cetak Master PDF">🗎 Cetak Master PDF</button><button class="btn" data-t="Buat Sesi Baru">⊕ + Buat Sesi Baru</button></div></div>
+
+  <section class="stats">
+    <div class="card st"><div class="r"><div><div class="lb">Total Sesi Mingguan</div></div><span class="ic d">▥</span></div><div><div class="big">192 Sesi</div><div class="ok">✔ 100% Terakomodasi di 24 Rombel</div></div><div class="bar"><i style="width:100%"></i></div></div>
+    <div class="card st"><div class="r"><div class="lb">Guru Pengampu</div><span class="ic">👥</span></div><div><div class="big">54 Guru</div><div class="sm" style="margin-top:2px">Rerata beban kerja: 26 JP/Minggu</div></div><div class="ok" style="margin:0"><span style="width:6px;height:6px;border-radius:50%;background:var(--g)"></span>Sesuai Beban Standar Sertifikasi Diknas</div></div>
+    <div class="card st"><div class="r"><div class="lb">Utilisasi Lab &amp;<br>Multimedia</div><span class="ic d">🔬</span></div><div><div class="big">8 Lab Aktif</div><div class="chips"><span>Bio:<br>85%</span><span>Fisika:<br>78%</span><span class="h">Komp:<br>92%</span></div></div><div class="bar"><i style="width:30%;opacity:.25"></i><i style="width:35%"></i><i style="width:35%;opacity:.25"></i></div></div>
+  </section>
+
+  <section class="card fbar">
+    <label class="rs">▦ Pilih Rombel: <select id="rb"></select></label><span class="vr"></span>
+    <div class="days" id="days"></div>
+    <div class="lg"><span><i></i>Sesi Reguler</span><span><i class="p"></i>Sesi Praktikum</span><button class="ib" style="border:0;cursor:pointer" data-t="Filter lanjutan" aria-label="Filter lanjutan">⚙</button></div>
+  </section>
+
+  <section class="cols">
+    <div class="dayc">
+      <div class="dh"><div class="l"><span style="font-size:22px">🗓</span><div style="color:var(--ink)"><h2 id="dt"></h2><p id="ds"></p></div></div><span class="pill">Status: KBM Aktif</span></div>
+      <div class="body" id="body"></div>
+      <div class="ft">ⓘ Waktu KBM berpatokan pada Lonceng Sentral SIMBA IoT V3.1<br><a href="#rekap" data-t="Rekap Jadwal Guru Pengampu">Lihat Rekap Jadwal Guru Pengampu Hari Ini →</a></div>
+    </div>
+    <div class="card">
+      <div class="dh" style="padding:0 0 14px"><h2 style="font-size:17px">⚗ Status Lab Hari Ini</h2><span class="pill" style="font-size:11px;padding:4px 10px">Live Monitor</span></div>
+      <div class="lab"><div class="t"><b>Lab Biologi 2</b><span class="bd p">Terpakai</span></div><p>Digunakan oleh: <b style="color:var(--ink)">XII MIPA 1</b> (Ahmad Fauzi, M.Sc.)</p><span class="w">⏱ Hingga pukul 10:15 WIB</span></div>
+      <div class="lab"><div class="t"><b>Lab Kimia 1</b><span class="bd">Tersedia</span></div><p>Kapasitas: 40 Meja Praktik • Alat &amp; Reagen Steril</p><span class="o g">✔ Slot siap dibooking sesi siang</span></div>
+      <div class="lab"><div class="t"><b>Lab Komputer 3</b><span class="bd n">Sterilisasi CBT</span></div><p>Persiapan Simulasi Asesmen Nasional &amp; PTS</p><span class="o">🔒 Akses khusus teknisi jaringan</span></div>
+      <button class="kp" data-t="Kelola Ploting Ruangan">▦ Kelola Ploting Semua Ruangan</button>
+    </div>
+  </section>
+</main>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<script src="/js/jadwal.js"></script>
+</body>
+</html>

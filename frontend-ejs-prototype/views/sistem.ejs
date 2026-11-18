@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>SIMBA Admin – Konfigurasi Satdik &amp; Keamanan Data</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="/css/shell.css">
+  <link rel="stylesheet" href="/css/sistem.css">
+</head>
+<body>
+<div class="app">
+  <%- include('partials/shell-sidebar') %>
+  <div class="col">
+    <%- include('partials/shell-topbar') %>
+    <main>
+  
+
+  <div class="crumb">SIMBA Admin › <b>Konfigurasi &amp; Pengaturan</b></div>
+  <div class="head"><h1>Konfigurasi Satdik &amp; Keamanan Data</h1><button class="btn" id="save">🛡 Simpan Perubahan Konfigurasi</button></div>
+
+  <section class="strip">
+    <div class="sc"><span class="ic">🔒</span><div class="t"><div class="lb">Protokol Keamanan Aktif</div><b>TLS 1.3 &amp; AES-256-GCM</b></div><span class="dot"></span></div>
+    <div class="sc"><span class="ic">✅</span><div class="t"><div class="lb">Hash Integrasi BSSN</div><b>Tervalidasi (SHA-512 Signature)</b></div><span class="vb">VALID</span></div>
+    <div class="sc"><span class="ic">🗄</span><div class="t"><div class="lb">Status Server Master Node</div><b>Normal • Uptime 99.98%</b></div><span class="lat">⚡<span>Latensi<br>18ms</span></span></div>
+  </section>
+
+  <div class="tabs" id="tabs">
+    <button class="on" data-k="0">🏛 Profil Sekolah &amp; Legalitas</button><button data-k="1">🗓 Tahun Ajaran &amp; Semester</button><button data-k="2">⇄ Integrasi API &amp; Dapodik</button><button data-k="3">🛡 Keamanan &amp; Autentikasi 2FA</button><button data-k="4">☁ Backup &amp; Pemulihan</button>
+  </div>
+
+  <section class="cols" id="cols">
+    <div>
+      <div class="card pf">
+        <div class="lg"><svg width="64" height="70" viewBox="0 0 64 70"><path d="M32 3l26 9v22c0 17-12 29-26 33C18 63 6 51 6 34V12z" fill="#1b6b2f"/><path d="M32 12l18 6v16c0 12-8 20-18 24-10-4-18-12-18-24V18z" fill="#e4f3e1"/><path d="M32 22c-6 6-8 12-4 18 2 3 6 3 8 0 4-6 2-12-4-18z" fill="#2f8f3a"/></svg></div>
+        <h2 id="lname">SMAN 1 TELADAN</h2><p>Satuan Pendidikan Tingkat Menengah Atas</p>
+        <span class="bg">🏅 Akreditasi A (Unggul BAN-S/M)</span><br><span class="bg n">Jenjang SMA Reguler</span>
+        <div class="inf"><div>NPSN Resmi<b><span id="lnpsn">20108920</span> <span class="chk">✔</span></b></div><div>Bentuk Pendidikan<b>Sekolah Menengah Atas</b></div><div>Status Lembaga<b>Negeri Pembina</b></div><div>SK Izin Operasional<b>420/1982/DISDIK</b></div></div>
+        <div class="fr"><button class="btn s" data-t="Ubah Favicon (.ico)">🖼 Ubah Favicon (.ico)</button><button class="sq" data-t="Unduh favicon" aria-label="Unduh favicon">⭳</button></div>
+      </div>
+      <div class="card gd" style="margin-top:20px"><div class="h">Gedung Utama SMAN 1 Teladan<span>DKI Jakarta</span></div><div class="ph"><span>Gedung Ki Hajar Dewantara, Kampus A</span></div><div class="co"><span>Koordinat Geografis<br>Dapodik:</span><code>-6.2415° S,<br>106.8012° E</code></div></div>
+    </div>
+
+    <div class="card" id="right">
+      <div class="fh"><div class="l"><div><h2>Data Induk Satuan Pendidikan &amp; Legalitas</h2><p>Pastikan seluruh data sinkron dengan Surat Keputusan Kemendikbudristek &amp; Dapodikdasmen terkini.</p></div></div><span class="sync">Terakhir Sinkron: Hari ini<br>08:30 WIB</span></div>
+      <div class="f"><label>Nama Resmi Satuan Pendidikan <i>*</i></label><div class="in" data-r><input id="nama" value="SMAN 1 Teladan Jakarta"><span class="chk">✔</span></div></div>
+      <div class="fg"><div class="f"><label>Nomor Pokok Sekolah Nasional (NPSN) <i>*</i></label><div class="row2"><div class="in" data-r><input id="npsn" value="20108920" inputmode="numeric" maxlength="8"></div><button class="btn g" id="cek">Cek Kemendikbud</button></div></div>
+        <div class="f"><label>Zona Waktu Operasional KBM <i>*</i></label><div class="in"><select><option>Asia/Jakarta (WIB - UTC+7)</option><option>Asia/Makassar (WITA - UTC+8)</option><option>Asia/Jayapura (WIT - UTC+9)</option></select></div></div></div>
+      <div class="f" style="margin-top:16px;margin-bottom:0"><label>Nama Kepala Sekolah Definitif &amp; NIP <i>*</i></label></div>
+      <div class="fg" style="margin-top:6px"><div class="in" data-r><input value="Dr. Hj. Nur Aini, M.Ed."></div><div class="in" data-r><input class="mono" value="19680315 199203 2 004"></div></div>
+      <div class="f" style="margin-top:16px"><label>Alamat Kampus Utama Satuan Pendidikan <i>*</i></label><div class="in" data-r><textarea>Jl. Pendidikan No. 76, RT 04 / RW 07, Kebayoran Baru, Jakarta Selatan, DKI Jakarta 12160</textarea></div></div>
+      <div class="fg"><div class="f"><label>Nomor Telepon Institusi</label><div class="in">📞<input value="(021) 789-2024" type="tel"></div></div><div class="f"><label>Pos-el Resmi Lembaga (E-mail Satdik) <i>*</i></label><div class="in" data-r>✉<input value="sekretariat@sman1.sch.id" type="email"></div></div></div>
+      <div class="fg"><div class="f"><label>Situs Web Publik</label><div class="in">🌐<input value="https://sman1teladan-jkt.sch.id"></div></div><div class="f"><label>Google Workspace for Education Domain</label><div class="in">▦<input value="@sman1.sch.id"></div></div></div>
+      <div class="cert"><span style="font-size:24px;color:var(--g)">📱</span><div class="t"><b>Validasi Sertifikat Digital BSrE</b><small>Sertifikat elektronik kepala sekolah terdaftar aktif hingga 14 Nov 2025.</small></div><button class="btn s" data-t="Perbarui Sertifikat">Perbarui Sertifikat</button></div>
+    </div>
+  </section>
+</main>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<script src="/js/sistem.js"></script>
+</body>
+</html>

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>SIMBA Admin – Manajemen Kelas &amp; Rombel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="/css/shell.css">
+  <link rel="stylesheet" href="/css/rombel.css">
+</head>
+<body>
+<div class="app">
+  <%- include('partials/shell-sidebar') %>
+  <div class="col">
+    <%- include('partials/shell-topbar') %>
+    <main>
+  
+
+  <div class="crumb">SIMBA Admin › <b>Manajemen Rombel &amp; Kelas</b></div>
+  <div class="head"><h1>Manajemen Kelas &amp; Alokasi Anggota Rombel</h1><button class="btn" data-t="Buat Rombel Baru">⊕ + Buat Rombel Baru</button></div>
+
+  <section class="stats">
+    <div class="card st"><div class="r"><div><div class="lb">Total Rombel Aktif</div><div class="big">24</div></div><span class="ic">🚪</span></div><div class="dist"><span>Distribusi Tingkat</span><b>X: 8 | XI: 8 | XII: 8</b></div></div>
+    <div class="card st"><div class="r"><div><div class="lb">Siswa Terplotting</div><div class="big">810<span>/ 810</span></div></div><span class="ic d">👥</span></div><div class="pb"><div class="bar"><i style="width:100%"></i></div>100% Penuh</div></div>
+    <div class="card st"><div class="r"><div><div class="lb">Keterisian Wali Kelas</div><div class="big">24<span>/ 24</span></div></div><span class="ic">🧑‍🏫</span></div><div class="ok">✔ 100% SK Kepala Sekolah Terbit</div></div>
+  </section>
+
+  <section class="main2">
+    <div class="card lc">
+      <div class="row"><h2>▤ Daftar Rombongan Belajar</h2><span class="cnt">24 Rombel</span></div>
+      <div class="tabs" id="tabs"><button class="on" data-f="">Semua (24)</button><button data-f="XII">Kelas XII (8)</button><button data-f="XI">Kelas XI (8)</button><button data-f="X">Kelas X (8)</button></div>
+      <label class="fs"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg><input id="rq" placeholder="Cari nama rombel, ruangan, atau wali..."></label>
+      <div class="lst" id="lst"></div>
+    </div>
+
+    <div class="card">
+      <div class="dh"><div><h2 id="dn"></h2><span class="pill" id="dc"></span><p>Tahun Ajaran 2024/2025 Genap | Kurikulum Merdeka</p></div>
+        <div class="ab"><button class="btn g" data-t="Pindah Massal Siswa">⇄ Pindah Massal Siswa</button><button class="btn" data-t="Tambah / Mutasi Siswa">👤 + Tambah / Mutasi Siswa</button></div></div>
+      <div class="info"><div class="ibx"><span class="ic">🪪</span><div><small>Wali Kelas Terdaftar</small><b id="dw"></b></div></div><div class="ibx"><span class="ic">🚻</span><div><small>Komposisi Gender</small><b id="dg"></b></div></div></div>
+      <div class="fl"><label class="fs"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg><input id="sq" placeholder="Cari nama siswa, NISN, atau n..."></label>
+        <select id="sg"><option value="">Semua Gender</option><option value="L">Laki-laki</option><option value="P">Perempuan</option></select>
+        <select id="ss"><option value="">Semua Status</option><option value="k">Pengurus Kelas</option><option value="a">Anggota</option></select></div>
+      <div class="tw"><table>
+<colgroup><col style="width:17%"><col style="width:27%"><col style="width:8%"><col style="width:14%"><col style="width:16%"><col style="width:18%"></colgroup><thead><tr><th>NISN /<br>Identitas</th><th>Nama Lengkap Siswa</th><th>L/P</th><th>Presensi</th><th>Nilai<br>Rata-rata</th><th>Peran Kelas</th></tr></thead><tbody id="tb"></tbody></table></div>
+      <div class="pg"><span id="info"></span><div class="pn" id="pn"></div></div>
+    </div>
+  </section>
+</main>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<script src="/js/rombel.js"></script>
+</body>
+</html>

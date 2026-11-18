@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SIMBA Admin – Monitoring Presensi</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/presensi.css">
+</head>
+<body>
+<div class="layout">
+  <%- include('partials/sidebar') %>
+  <div class="main">
+    <%- include('partials/topbar') %>
+    <main class="content">
+
+      <div class="page-head">
+        <div>
+          <p class="crumb">SIMBA Admin › Kesiswaan & GTK › <a href="#">Monitoring Presensi</a></p>
+          <h1><%= title %></h1>
+        </div>
+        <div class="head-actions">
+          <button class="btn btn-soft" data-toast="Peta geofencing belum tersedia (simulasi)."><i class="bi bi-bullseye"></i> Peta Geofencing Radius (50M)</button>
+          <button class="btn btn-soft" data-toast="Rekap bulanan diunduh (simulasi)."><i class="bi bi-download"></i> Unduh Rekap Bulanan Dapodik (.XLSX)</button>
+          <button class="btn btn-primary" data-toast="Notifikasi WA dikirim ke orang tua (simulasi)."><i class="bi bi-send"></i> Kirim Notifikasi WA Presensi ke Ortu</button>
+        </div>
+      </div>
+
+      <div class="pr-strip">
+        <strong><i class="bi bi-circle-fill"></i> SINKRONISASI JARINGAN GERBANG UTAMA & SATELIT AKTIF</strong>
+        <span>Batas Waktu Masuk: <b><%= strip.batas %></b></span>
+        <span>Zona: <b><%= strip.zona %></b></span>
+        <span>Audit Otomatis: <b><%= strip.audit %></b></span>
+      </div>
+
+      <!-- Kartu ringkasan -->
+      <section class="pr-stats">
+        <article class="card">
+          <div class="pr-top"><div><p class="label">Kehadiran Siswa Hari Ini</p><p class="big"><%= kartu.siswa.persen %>% <small class="green"><i class="bi bi-graph-up-arrow"></i><%= kartu.siswa.naik %></small></p></div><span class="icon-box"><i class="bi bi-people"></i></span></div>
+          <div class="bar"><span style="width: <%= kartu.siswa.persen %>%"></span></div>
+          <p class="pr-foot"><span><%= kartu.siswa.hadir %> Hadir / <%= kartu.siswa.total %> Siswa</span><span><%= kartu.siswa.izin %> I | <%= kartu.siswa.sakit %> S | <%= kartu.siswa.alpa %> A</span></p>
+        </article>
+        <article class="card">
+          <div class="pr-top"><div><p class="label">Kehadiran GTK & Staf</p><p class="big"><%= kartu.gtk.persen %>% <small class="green"><i class="bi bi-check-circle"></i>Lengkap</small></p></div><span class="icon-box gray"><i class="bi bi-person-vcard"></i></span></div>
+          <div class="bar dark"><span style="width: <%= kartu.gtk.persen %>%"></span></div>
+          <p class="pr-foot"><span><%= kartu.gtk.guru %> Guru Mengampu</span><span><%= kartu.gtk.tendik %> Tenaga Kependidikan</span></p>
+        </article>
+        <article class="card">
+          <div class="pr-top"><div><p class="label">Akurasi GPS & Geofence</p><p class="big"><%= kartu.gps.persen %>% <small class="green">Tervalidasi</small></p></div><span class="icon-box"><i class="bi bi-bullseye"></i></span></div>
+          <div class="bar"><span style="width: <%= kartu.gps.persen %>%"></span></div>
+          <p class="pr-foot"><span><%= kartu.gps.radius %></span></p>
+        </article>
+        <article class="card">
+          <div class="pr-top"><div><p class="label">Anomali Terdeteksi</p><p class="big"><%= kartu.anomali.jumlah %> <small>Pelanggaran</small></p></div><span class="icon-box gray"><i class="bi bi-shield"></i></span></div>
+          <div class="bar soft"><span style="width: 100%"></span></div>
+          <p class="pr-foot"><span>Anti Fake GPS Aktif</span><span>Bypass WiFi Nihil</span></p>
+        </article>
+      </section>
+
+      <div class="pr-grid">
+        <!-- Progres per tingkat -->
+        <section class="card">
+          <div class="card-head">
+            <div><h2>Progres Kehadiran Per Tingkat / Jenjang</h2><p class="muted">Monitoring agregat dari 27 rombel aktif kelas X, XI, dan XII</p></div>
+            <span class="pill">Tahun Ajaran 2024/2025</span>
+          </div>
+          <div class="lvl-list">
+            <% tingkat.forEach(t => { %>
+              <div class="lvl">
+                <div class="lvl-top"><span><i class="bi bi-circle-fill tone-<%= t.tone %>"></i> <strong><%= t.nama %></strong> | <%= t.rombel %> Rombel</span><span><strong><%= t.hadir %> / <%= t.total %> Siswa</strong> <b class="green"><%= t.persen %>% Hadir</b></span></div>
+                <div class="lvl-bar <%= t.ket[2][1] > 0 ? 'has-alpa' : '' %>"><span class="tone-bg-<%= t.tone %>" style="width: <%= t.persen %>%"></span></div>
+                <p class="lvl-ket"><% t.ket.forEach(k => { %><span class="<%= k[0] === 'Alpa' && k[1] > 0 ? 'red' : '' %>"><%= k[0] %>: <%= k[1] %></span><% }) %></p>
+              </div>
+            <% }) %>
+          </div>
+          <div class="lvl-foot"><span class="muted">*Toleransi keterlambatan sistem: 15 Menit dengan catatan dispensasi BK.</span><a href="/admin/rombel" class="link-live">Rincian Tiap Rombel <i class="bi bi-arrow-right"></i></a></div>
+        </section>
+
+        <!-- Infrastruktur -->
+        <aside class="card">
+          <div class="card-head"><h2>Infrastruktur Sensor & Gateway</h2><i class="bi bi-circle-fill ok"></i></div>
+          <p class="muted">Konektivitas titik presensi hardware fisik dan edge-validator.</p>
+          <ul class="infra">
+            <% infra.forEach(i => { %>
+              <li><span class="icon-box sm"><i class="bi <%= i.icon %>"></i></span><div><strong><%= i.nama %></strong><small><%= i.desk %></small></div><span class="st st-<%= i.tone %>"><%= i.status %></span></li>
+            <% }) %>
+          </ul>
+          <p class="ssid"><i class="bi bi-router"></i> <span>SSID Biometrik: <strong><%= ssid.nama %></strong> (<%= ssid.sandi %>)</span></p>
+        </aside>
+      </div>
+
+      <!-- Audit kasus -->
+      <section class="card audit">
+        <div class="audit-head">
+          <div><h2>Audit & Penanganan Kasus Kehadiran Siswa Hari Ini</h2><p class="muted">Tinjau lampiran medis, surat izin kedinasan sekolah, dan delegasikan tindakan penanganan cepat.</p></div>
+          <div class="tabs" id="prTabs">
+            <% tab.forEach((t, i) => { %><button class="tab <%= i === 0 ? 'is-active' : '' %>" data-filter="<%= t.key %>"><%= t.label %> <span class="count c-<%= t.tone %>"><%= t.jumlah %></span></button><% }) %>
+          </div>
+        </div>
+        <div class="audit-filter">
+          <label class="search-box"><i class="bi bi-search"></i><input type="search" id="prCari" placeholder="Filter nama siswa, rombel..."></label>
+          <select id="prRombel" aria-label="Filter rombel"><option value="">Semua Rombel</option><% opsiRombel.forEach(o => { %><option><%= o %></option><% }) %></select>
+          <span class="muted" id="prInfo">Menampilkan 4 dari 13 kasus yang membutuhkan perhatian</span>
+        </div>
+        <div class="table-wrap">
+          <table class="table audit-table">
+            <thead><tr><th>Siswa / Rombel</th><th>NISN</th><th>Waktu & Metode Check-in</th><th>Status Kehadiran</th><th>Lampiran Bukti</th><th>Status Verifikasi</th><th>Aksi</th></tr></thead>
+            <tbody id="prBody">
+              <% kasus.forEach(k => { %>
+                <tr data-kat="<%= k.kat %>">
+                  <td><div class="who"><span class="initial <%= k.statusTone === 'bad' ? 'bad' : '' %>"><%= k.inisial %></span><div><strong><%= k.nama %></strong><small><%= k.rombel %></small></div></div></td>
+                  <td class="mono"><%= k.nisn %></td>
+                  <td><strong class="<%= k.telat ? 'red' : '' %>"><%= k.waktu %></strong><small><i class="bi <%= k.metodeIcon %>"></i> <%= k.metode %></small></td>
+                  <td><span class="badge b-<%= k.statusTone %>"><%= k.status %></span></td>
+                  <td><% if (k.lampiran && !k.lampiranTeks) { %><a href="#" class="file"><i class="bi bi-paperclip"></i> <%= k.lampiran %></a><% } else if (k.lampiranTeks) { %><span class="small-text"><%= k.lampiran %></span><% } else { %><em class="muted">Tidak ada lampiran</em><% } %></td>
+                  <td class="verif v-<%= k.verifTone %>"><i class="bi <%= k.verifIcon %>"></i> <span><%= k.verif %></span></td>
+                  <td>
+                    <% if (k.aksi === 'setujui') { %><button class="btn btn-primary js-setujui"><i class="bi bi-check-lg"></i> Setujui</button><% } %>
+                    <% if (k.aksi === 'hubungi') { %><button class="btn btn-soft" data-toast="Notifikasi ke orang tua dikirim (simulasi)."><i class="bi bi-telephone"></i> Hubungi Ortu</button><% } %>
+                  </td>
+                </tr>
+              <% }) %>
+              <tr id="prKosong" hidden><td colspan="7" class="empty">Tidak ada kasus yang cocok dengan filter ini.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="pager">
+          <span>Menampilkan 1-4 entri dari 13 rekap perhatian harian</span>
+          <nav class="pages" aria-label="Halaman"><button aria-label="Sebelumnya"><i class="bi bi-chevron-left"></i></button><button class="is-active">1</button><button>2</button><button aria-label="Berikutnya"><i class="bi bi-chevron-right"></i></button></nav>
+        </div>
+      </section>
+
+      <p class="toast" id="toast" role="status" hidden></p>
+    </main>
+  </div>
+</div>
+<script src="/js/presensi.js"></script>
+</body>
+</html>

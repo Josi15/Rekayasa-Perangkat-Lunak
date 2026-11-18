@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>SIMBA Admin – Manajemen Pengguna</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="/css/shell.css">
+  <link rel="stylesheet" href="/css/pengguna.css">
+</head>
+<body>
+<div class="app">
+  <%- include('partials/shell-sidebar') %>
+  <div class="col">
+    <%- include('partials/shell-topbar') %>
+    <main>
+  
+
+  <div class="crumb">SIMBA Admin › <b>Manajemen Pengguna &amp; Akun Satdik</b></div>
+  <div class="head"><h1>Direktori &amp; Manajemen Pengguna Sekolah</h1>
+    <div class="acts"><button class="btn" data-t="Tambah Pengguna Baru">👤 + Tambah Pengguna Baru</button><button class="btn g" data-t="Ekspor Data (.XLSX)">⭳ Ekspor Data (.XLSX)</button></div></div>
+
+  <section class="stats">
+    <div class="card st"><div class="r"><div><div class="lb">Total Akun Aktif</div><div class="big">876<span>Pengguna</span></div></div><span class="ic">🪪</span></div><div class="ok">🛡 99.2% Terverifikasi SSO</div></div>
+    <div class="card st"><div class="r"><div><div class="lb">Siswa Terdaftar</div><div class="big">810<span>Siswa</span></div></div><span class="ic">🎓</span></div><div class="ok m">▯ 24 Rombel X-XII</div></div>
+    <div class="card st"><div class="r"><div><div class="lb">Guru &amp; Tendik</div><div class="big">54<span>Pendidik</span></div></div><span class="ic">🧑‍🏫</span></div><div class="ok">✔ 100% NUPTK Valid</div></div>
+    <div class="card st"><div class="r"><div><div class="lb">Admin &amp; Staf TU</div><div class="big">12<span>Akun</span></div></div><span class="ic n">🔒</span></div><div class="ok m">🛡 2FA Terlindungi</div></div>
+  </section>
+
+  <section class="card flt">
+    <div class="tabs" id="tabs"><button class="on" data-f="all">Semua <em>876</em></button><button data-f="Siswa">Siswa <em>810</em></button><button data-f="Guru Pengampu">Guru Pengampu <em>54</em></button><button data-f="Staf TU">Staf TU <em>12</em></button></div>
+    <div class="fr"><label class="fs"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg><input id="q" placeholder="Cari nama, NISN, NIP, atau surel sekolah..."></label>
+      <select id="sel"><option value="">Semua Rombel &amp; Jenjang</option><option>X</option><option>XI</option><option>XII</option></select></div>
+  </section>
+
+  <section class="card tcard">
+    <div class="tw"><table>
+<colgroup><col style="width:5%"><col style="width:12%"><col style="width:21%"><col style="width:14%"><col style="width:22%"><col style="width:10%"><col style="width:16%"></colgroup>
+      <thead><tr><th><input type="checkbox" id="all" aria-label="Pilih semua"></th><th>ID<br>Pengguna</th><th>Nama Lengkap &amp; Profil</th><th>Identitas<br>Nasional</th><th>Surel Resmi Sekolah</th><th>Peran<br>Satdik</th><th>Kelas /<br>Penugasan</th></tr></thead>
+      <tbody id="tb"></tbody></table></div>
+    <div class="pg"><span id="info"></span><div class="pn" id="pn"></div></div>
+  </section>
+</main>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<script src="/js/pengguna.js"></script>
+</body>
+</html>
