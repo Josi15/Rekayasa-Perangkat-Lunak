@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 node_modules/
 dist/
 vendor/
@@ -5,3 +6,8 @@ vendor/
 .env.local
 *.bak
 .DS_Store
+=======
+node_modules
+dist
+.env
+>>>>>>> 16524b870ed801d90c98967ddad420a86d6ca08d
