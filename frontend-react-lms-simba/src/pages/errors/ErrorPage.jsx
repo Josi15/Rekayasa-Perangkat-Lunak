@@ -1,17 +1,16 @@
 import { Link } from 'react-router-dom'
-import { useAuth } from '../../contexts/AuthContext'
-import { roleHome } from '../../utils/format'
 
-function ErrorPage({ code, title, text }) {
-  const { user } = useAuth()
+function Page({ code, title, text }) {
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center gap-3 p-6 text-center">
-      <p className="text-6xl font-extrabold text-brand-600">{code}</p>
-      <h1 className="text-xl font-bold">{title}</h1>
-      <p className="max-w-sm text-sm text-slate-500">{text}</p>
-      <Link className="btn-primary" to={user ? roleHome[user.role] : '/login'}>{user ? 'Ke dashboard' : 'Ke halaman login'}</Link>
+    <div className="grid min-h-screen place-items-center p-4 text-center font-sans">
+      <div>
+        <p className="text-6xl font-bold text-brand-600">{code}</p>
+        <h1 className="mt-2 text-xl font-semibold">{title}</h1>
+        <p className="mt-1 text-slate-500">{text}</p>
+        <Link to="/" className="mt-5 inline-block rounded-lg bg-brand-600 px-4 py-2 text-sm text-white hover:bg-brand-700">Ke beranda</Link>
+      </div>
     </div>
   )
 }
-export const ForbiddenPage = () => <ErrorPage code="403" title="Akses ditolak" text="Peran akun Anda tidak boleh membuka halaman ini. Pembatasan ini hanya simulasi di antarmuka; otorisasi sesungguhnya dilakukan backend." />
-export const NotFoundPage = () => <ErrorPage code="404" title="Halaman tidak ditemukan" text="Alamat yang Anda tuju tidak tersedia." />
+export function Forbidden() { return <Page code="403" title="Akses ditolak" text="Anda tidak memiliki izin untuk membuka halaman ini." /> }
+export function NotFound() { return <Page code="404" title="Halaman tidak ditemukan" text="Alamat yang Anda tuju tidak tersedia." /> }

@@ -1,29 +1,30 @@
 import { NavLink } from 'react-router-dom'
-import { X, LogOut } from 'lucide-react'
-import Logo from './Logo'
+import { GraduationCap, X } from 'lucide-react'
 
-const link = (bottom) => ({ isActive }) =>
-  `flex items-center gap-3 rounded-lg px-4 py-2.5 text-sm font-medium transition ${
-    isActive ? (bottom ? 'bg-brand-100 text-brand-700' : 'bg-brand-600 text-white') : bottom ? 'bg-brand-50 text-slate-700 hover:bg-brand-100' : 'text-slate-700 hover:bg-brand-50'}`
-
-export default function Sidebar({ items, basePath, open, onClose, onLogout }) {
-  const render = (list, bottom) => list.map(({ label, path, icon: Icon }) => (
-    <NavLink key={path} to={`${basePath}/${path}`} onClick={onClose} className={link(bottom)}><Icon size={18} /> {label}</NavLink>
-  ))
+export default function Sidebar({ menu, open, onClose }) {
   return (
     <>
       {open && <div className="fixed inset-0 z-30 bg-slate-900/40 lg:hidden" onClick={onClose} />}
-      <aside className={`print:hidden fixed inset-y-0 left-0 z-40 flex w-64 flex-col bg-white transition-transform lg:translate-x-0 ${open ? 'translate-x-0' : '-translate-x-full'}`}>
-        <div className="flex h-20 items-center justify-between px-6">
-          <Logo />
-          <button className="lg:hidden" onClick={onClose} aria-label="Tutup menu"><X size={20} /></button>
+      <aside className={`fixed inset-y-0 left-0 z-40 w-64 transform border-r border-slate-200 bg-white transition-transform lg:static lg:translate-x-0 ${open ? 'translate-x-0' : '-translate-x-full'}`}>
+        <div className="flex h-16 items-center justify-between px-5">
+          <div className="flex items-center gap-2 text-lg font-bold text-brand-700"><GraduationCap className="size-6" />LMS Simba</div>
+          <button onClick={onClose} className="lg:hidden" aria-label="Tutup menu"><X className="size-5" /></button>
         </div>
-        <p className="px-6 pb-2 text-xs font-semibold tracking-wider text-slate-500">MENU UTAMA</p>
-        <nav aria-label="Menu utama" className="flex-1 space-y-1 overflow-y-auto px-3">{render(items.filter((i) => !i.bottom), false)}</nav>
-        <div className="space-y-1 p-3">
-          {render(items.filter((i) => i.bottom), true)}
-          <button onClick={onLogout} className="flex w-full items-center gap-3 rounded-lg px-4 py-2.5 text-sm font-medium text-slate-600 hover:bg-red-50 hover:text-red-700"><LogOut size={18} /> Keluar</button>
-        </div>
+        <nav className="space-y-1 px-3">
+          {menu.map(({ label, to, icon: Icon, soon }) =>
+            soon ? (
+              <div key={label} className="flex cursor-not-allowed items-center gap-3 rounded-lg px-3 py-2 text-sm text-slate-400" aria-disabled="true">
+                <Icon className="size-5" />{label}
+                <span className="ml-auto rounded bg-slate-100 px-1.5 text-[10px]">Segera</span>
+              </div>
+            ) : (
+              <NavLink key={label} to={to} end={to.split("/").length <= 2} onClick={onClose}
+                className={({ isActive }) => `flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium ${isActive ? 'bg-brand-50 text-brand-700' : 'text-slate-600 hover:bg-slate-50'}`}>
+                <Icon className="size-5" />{label}
+              </NavLink>
+            ),
+          )}
+        </nav>
       </aside>
     </>
   )

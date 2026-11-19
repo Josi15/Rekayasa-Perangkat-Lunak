@@ -1,26 +1,28 @@
 import { useEffect, useRef, useState } from 'react'
+import { ChevronDown } from 'lucide-react'
 
-// items: [{ label, icon: Icon, onClick }]
-export default function Dropdown({ trigger, items, align = 'right', label }) {
+export default function Dropdown({ trigger, items, align = 'right' }) {
   const [open, setOpen] = useState(false)
   const ref = useRef(null)
   useEffect(() => {
-    const h = (e) => ref.current && !ref.current.contains(e.target) && setOpen(false)
-    document.addEventListener('mousedown', h)
-    return () => document.removeEventListener('mousedown', h)
+    const close = (e) => ref.current && !ref.current.contains(e.target) && setOpen(false)
+    document.addEventListener('mousedown', close)
+    return () => document.removeEventListener('mousedown', close)
   }, [])
   return (
-    <div className="relative" ref={ref}>
-      <button aria-label={label} onClick={() => setOpen((o) => !o)} aria-haspopup="menu" aria-expanded={open}>{trigger}</button>
+    <div ref={ref} className="relative">
+      <button onClick={() => setOpen((o) => !o)} className="flex items-center gap-2 rounded-lg px-2 py-1.5 hover:bg-slate-100">
+        {trigger}
+        <ChevronDown className="size-4 text-slate-500" />
+      </button>
       {open && (
-        <div role="menu" className={`card absolute z-40 mt-2 w-48 p-1 ${align === 'right' ? 'right-0' : 'left-0'}`}>
-          {items.map(({ label, icon: Icon, onClick }) => (
-            <button key={label} role="menuitem" onClick={() => { setOpen(false); onClick() }}
-              className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-slate-100">
-              {Icon && <Icon size={16} />} {label}
-            </button>
+        <ul className={`absolute ${align === 'right' ? 'right-0' : 'left-0'} z-40 mt-1 w-44 rounded-lg border border-slate-200 bg-white py-1 shadow-lg`}>
+          {items.map((i) => (
+            <li key={i.label}>
+              <button onClick={() => { setOpen(false); i.onClick() }} className="w-full px-3 py-2 text-left text-sm text-slate-700 hover:bg-slate-50">{i.label}</button>
+            </li>
           ))}
-        </div>
+        </ul>
       )}
     </div>
   )

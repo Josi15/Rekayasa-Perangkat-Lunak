@@ -1,33 +1,35 @@
-import { Navigate } from 'react-router-dom'
-import StudentLayout from '../layouts/StudentLayout'
-import StudentDashboard from '../pages/student/StudentDashboard'
-import StudentSubjectsPage from '../pages/student/StudentSubjectsPage'
-import StudentMaterialsPage from '../pages/student/StudentMaterialsPage'
-import StudentMaterialDetailPage from '../pages/student/StudentMaterialDetailPage'
-import StudentAssignmentsPage from '../pages/student/StudentAssignmentsPage'
-import StudentAssignmentDetailPage from '../pages/student/StudentAssignmentDetailPage'
-import StudentGradesPage from '../pages/student/StudentGradesPage'
-import StudentSchedulePage from '../pages/student/StudentSchedulePage'
-import StudentAnnouncementsPage from '../pages/student/StudentAnnouncementsPage'
-import StudentAnnouncementDetailPage from '../pages/student/StudentAnnouncementDetailPage'
-import ProtectedRoute from './ProtectedRoute'
+import StudentDashboard from '../pages/student/StudentDashboard.jsx'
+import MyClasses from '../pages/student/MyClasses.jsx'
+import ClassDetail from '../pages/student/ClassDetail.jsx'
+import MaterialList from '../pages/student/MaterialList.jsx'
+import MaterialDetail from '../pages/student/MaterialDetail.jsx'
+import Tasks from '../pages/student/Tasks.jsx'
+import TaskDetail from '../pages/student/TaskDetail.jsx'
+import Grades from '../pages/student/Grades.jsx'
+import Schedule from '../pages/student/Schedule.jsx'
+import Announcements from '../pages/student/Announcements.jsx'
+import AnnouncementDetail from '../pages/student/AnnouncementDetail.jsx'
+import Notifications from '../pages/student/Notifications.jsx'
+import Profile from '../pages/student/Profile.jsx'
+import Attendance from '../pages/student/Attendance.jsx'
+import Quiz from '../pages/student/Quiz.jsx'
+import QuizRunner from '../pages/student/QuizRunner.jsx'
 
-export const studentRoutes = {
-  element: <ProtectedRoute role="student" />,
-  children: [{
-    path: '/student', element: <StudentLayout />,
-    children: [
-      { index: true, element: <Navigate to="dashboard" replace /> },
-      { path: 'dashboard', element: <StudentDashboard /> },
-      { path: 'subjects', element: <StudentSubjectsPage /> },
-      { path: 'materials', element: <StudentMaterialsPage /> },
-      { path: 'materials/:id', element: <StudentMaterialDetailPage /> },
-      { path: 'assignments', element: <StudentAssignmentsPage /> },
-      { path: 'assignments/:id', element: <StudentAssignmentDetailPage /> },
-      { path: 'grades', element: <StudentGradesPage /> },
-      { path: 'schedule', element: <StudentSchedulePage /> },
-      { path: 'announcements', element: <StudentAnnouncementsPage /> },
-      { path: 'announcements/:id', element: <StudentAnnouncementDetailPage /> },
-    ],
-  }],
-}
+export const studentRoutes = [
+  { index: true, element: <StudentDashboard /> },
+  { path: 'classes', element: <MyClasses /> },
+  { path: 'classes/:courseId', element: <ClassDetail /> },
+  { path: 'materials', element: <MaterialList /> },
+  { path: 'materials/:materialId', element: <MaterialDetail /> },
+  { path: 'tasks', element: <Tasks /> },
+  { path: 'tasks/:taskId', element: <TaskDetail /> },
+  { path: 'grades', element: <Grades /> },
+  { path: 'schedule', element: <Schedule /> },
+  { path: 'announcements', element: <Announcements /> },
+  { path: 'announcements/:id', element: <AnnouncementDetail /> },
+  { path: 'notifications', element: <Notifications /> },
+  { path: 'profile', element: <Profile /> },
+  { path: 'attendance', element: <Attendance /> },
+  { path: 'quiz', element: <Quiz /> },
+  { path: 'quiz/:quizId', element: <QuizRunner /> },
+]

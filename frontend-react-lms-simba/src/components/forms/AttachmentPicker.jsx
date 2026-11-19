@@ -1,47 +1,47 @@
 import { useRef, useState } from 'react'
 import { Paperclip, X, FileText } from 'lucide-react'
-import { serviceMode } from '../../services'
+import { ALLOWED_EXT, MAX_FILES, MAX_MB, extOf, fmtSize, validateFile } from '../../utils/fileValidation.js'
 
-const ALLOWED = ['pdf', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'png', 'jpg', 'jpeg']
-const MAX = 5 * 1024 * 1024
-export const formatSize = (b) => (!b ? '' : b >= 1048576 ? `${(b / 1048576).toFixed(1)} MB` : `${Math.max(1, Math.round(b / 1024))} KB`)
-
-// value: [{ name, size, file }]. Mode mock: hanya metadata yang dipakai (file tidak diunggah). Mode API: `file` diunggah multipart.
-export default function AttachmentPicker({ value, onChange }) {
+// Menyimpan hanya metadata berkas (nama, ukuran, tipe); unggah sungguhan menunggu backend.
+export default function AttachmentPicker({ files, onChange, error, disabled }) {
   const ref = useRef(null)
-  const [errors, setErrors] = useState([])
+  const [problems, setProblems] = useState([])
 
-  const pick = (e) => {
-    const errs = [], ok = []
-    for (const f of e.target.files) {
-      const ext = f.name.split('.').pop().toLowerCase()
-      if (!ALLOWED.includes(ext)) errs.push(`${f.name}: jenis file tidak didukung.`)
-      else if (f.size > MAX) errs.push(`${f.name}: melebihi 5 MB.`)
-      else if (value.some((v) => v.name === f.name)) errs.push(`${f.name}: sudah dipilih.`)
-      else ok.push({ name: f.name, size: f.size, file: f }) // `file` = objek File asli untuk diunggah (diabaikan saat JSON-clone di mode mock)
-    }
-    setErrors(errs)
-    if (ok.length) onChange([...value, ...ok])
-    e.target.value = ''
+  const add = (list) => {
+    const next = [...files]
+    const errs = []
+    Array.from(list).forEach((f) => {
+      const err = validateFile(f, next)
+      if (err) errs.push(err)
+      else next.push({ name: f.name, size: f.size, type: extOf(f.name) })
+    })
+    setProblems(errs)
+    onChange(next)
   }
+  const pick = (e) => { add(e.target.files); e.target.value = '' }
+  const drop = (e) => { e.preventDefault(); if (!disabled) add(e.dataTransfer.files) }
+  const remove = (name) => { setProblems([]); onChange(files.filter((f) => f.name !== name)) }
 
   return (
-    <div className="space-y-2">
-      <input ref={ref} type="file" multiple hidden onChange={pick} aria-label="Pilih file lampiran" />
-      <button type="button" className="btn-secondary" onClick={() => ref.current.click()}><Paperclip size={16} /> Pilih file</button>
-      <p className="text-xs text-slate-500">Format: {ALLOWED.join(', ')}. Maks. 5 MB per file.{serviceMode.mock ? ' Mode simulasi: file tidak diunggah ke server.' : ''}</p>
-      {errors.map((er) => <p key={er} role="alert" className="text-xs text-red-600">{er}</p>)}
-      <ul className="space-y-1">
-        {value.map((f) => (
-          <li key={f.name} className="flex items-center gap-2 rounded-lg border border-slate-200 p-2 text-sm">
-            <FileText size={16} className="text-slate-400" />
-            <span className="flex-1 truncate">{f.name}</span>
-            <span className="text-xs text-slate-500">{formatSize(f.size)}</span>
-            {serviceMode.mock && <span className="rounded bg-amber-100 px-1.5 py-0.5 text-xs text-amber-700">Simulasi · belum diunggah</span>}
-            <button type="button" aria-label={`Hapus ${f.name}`} onClick={() => onChange(value.filter((v) => v.name !== f.name))}><X size={14} /></button>
-          </li>
-        ))}
-      </ul>
+    <div>
+      <span className="mb-1 block text-sm font-medium text-slate-700">Lampiran (opsional)</span>
+      <input ref={ref} type="file" multiple hidden accept={ALLOWED_EXT.map((e) => `.${e}`).join(',')} onChange={pick} />
+      <button type="button" disabled={disabled} onClick={() => ref.current.click()} onDragOver={(e) => e.preventDefault()} onDrop={drop}
+        className="flex w-full flex-col items-center gap-2 rounded-2xl border-2 border-dashed border-simba-line bg-simba-bg/60 px-4 py-6 text-center text-sm text-slate-600 hover:bg-brand-50 disabled:opacity-50">
+        <Paperclip className="size-6 text-brand-600" /><b className="text-slate-800">Tarik & jatuhkan dokumen ke sini</b>atau klik untuk memilih dokumen dari perangkat
+      </button>
+      <p className="mt-1 text-xs text-slate-500">Tipe: {ALLOWED_EXT.join(', ').toUpperCase()}. Maks. {MAX_MB} MB per berkas, {MAX_FILES} berkas.</p>
+      {files.length > 0 && (
+        <ul className="mt-2 space-y-1">
+          {files.map((f) => (
+            <li key={f.name} className="flex items-center gap-2 rounded-lg bg-slate-50 px-3 py-1.5 text-sm">
+              <FileText className="size-4 text-brand-600" /><span className="flex-1 truncate">{f.name}</span><span className="text-xs text-slate-500">{fmtSize(f.size)}</span>
+              <button type="button" onClick={() => remove(f.name)} aria-label={`Hapus ${f.name}`}><X className="size-4 text-slate-400" /></button>
+            </li>
+          ))}
+        </ul>
+      )}
+      {[...problems, ...(error ? [error] : [])].map((p) => <p key={p} className="mt-1 text-xs text-red-600" role="alert">{p}</p>)}
     </div>
   )
 }
